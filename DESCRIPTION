@@ -1,0 +1,25 @@
+Package: MtxExperiment
+Title: Represent Human Cell Atlas 'MTX' bundles as SummarizedExperiment
+Version: 0.0.1
+Authors@R: 
+    person(
+        given = "Martin",
+        family = "Morgan",
+        role = c("aut", "cre"),
+        email = "mtmorgan.bioc@gmail.com",
+        comment = c(ORCID = "0000-0002-5874-8148")
+    )
+Description: This package enables import of Human Cell Atlas '.zip'
+    archives of experiments. The package supports direct download of
+    files, creating `SingleCellExperiment` objects for interoperation
+    with standard Bioconductor single-cell workflows.
+License: Artistic-2.0
+Encoding: UTF-8
+LazyData: true
+Depends:
+    SingleCellExperiment
+Imports:
+    Matrix,
+    GenomicRanges,
+    utils
+RoxygenNote: 6.1.1
