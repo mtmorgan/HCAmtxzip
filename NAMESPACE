@@ -3,7 +3,7 @@
 export(discover)
 export(import.mtxzip)
 importFrom(GenomicRanges,makeGRangesFromDataFrame)
-importFrom(Matrix,sparseMatrix)
+importFrom(Matrix,readMM)
 importFrom(SingleCellExperiment,SingleCellExperiment)
 importFrom(httr,GET)
 importFrom(httr,content)

@@ -74,7 +74,7 @@
 #'     represented in a sparse matrix.
 #'
 #' @importFrom utils download.file read.delim unzip
-#' @importFrom Matrix sparseMatrix
+#' @importFrom Matrix readMM
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom SingleCellExperiment SingleCellExperiment
 #'
@@ -139,13 +139,7 @@ import.mtxzip <-
 
     ## assays
     !verbose || .message("assays")
-    headers <- readLines(ar[["matrix"]], 2)
-    dims <- as.integer(strsplit(headers[[2]], " ")[[1]][1:2])
-    counts <- .read_tsv(ar[["matrix"]], skip = 2, sep=" ")
-    counts <- sparseMatrix(
-        counts[[1]], counts[[2]], x = counts[[3]],
-        dims = dims
-    )
+    counts <- readMM(ar[["matrix"]])
 
     ## return value
     !verbose || .message("SingleCellExperiment")
