@@ -32,20 +32,12 @@
     if (length(msg)) msg else TRUE
 }
 
+#' @importFrom BiocFileCache BiocFileCache bfcrpath
 .download_zip <-
-    function(path, destination)
+    function(path)
 {
-    ## FIXME: use BiocFileCache
-    if (!dir.exists(destination))
-        dir.create(destination)
-
-    destfile <- file.path(destination, basename(path))
-
-    status <- download.file(path, destfile)
-    if (!identical(status, 0L))
-        stop("'download.file' failed with error code '", status, "'")
-
-    destfile
+    bfc <- BiocFileCache()
+    bfcrpath(bfc, path)
 }
 
 .read_tsv <-
@@ -73,7 +65,7 @@
 #'     data. Rows represent features and columns cells; counts are
 #'     represented in a sparse matrix.
 #'
-#' @importFrom utils download.file read.delim unzip
+#' @importFrom utils read.delim unzip
 #' @importFrom Matrix readMM
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom SingleCellExperiment SingleCellExperiment
@@ -102,7 +94,7 @@ import.mtxzip <-
     ## download?
     if (startsWith(path, "http")) {
         !verbose || .message("download")
-        path <- .download_zip(path, exdir)
+        path <- .download_zip(path)
     }
 
     ## unzip

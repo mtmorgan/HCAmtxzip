@@ -19,8 +19,9 @@ LazyData: true
 Depends:
     SingleCellExperiment
 Imports:
-    Matrix,
+    BiocFileCache,
     GenomicRanges,
+    Matrix,
     utils,
     httr,
     tibble,
