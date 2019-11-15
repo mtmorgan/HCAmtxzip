@@ -94,9 +94,9 @@ The figure below provides a schematic view of the SingleCellExperiment
 -- there is feature x cell matrix of counts, with row and column
 annotations.
 
-![SingleCellExperiment][sce_image]
+![sce][sce_image]
 
-[sce_image]: https://raw.githubusercontent.com/Bioconductor/SummarizedExperiment/master/vignettes/SE.svg
+[sce_image]: https://raw.githubusercontent.com/Bioconductor/SummarizedExperiment/master/vignettes/SE.svg?sanitize=true
 
 The object contains a matrix of feature x sample counts, and it's easy
 to discover, e.g., that about 92\% the cells in the matrix are zeros.
