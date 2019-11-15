@@ -75,7 +75,7 @@ colData_distinct <-
 {
     stopifnot(
         is(sce, "SummarizedExperiment"),
-        .is_scalar_logical(colnames)
+        .is_scalar_logical(abbreviate_colnames)
     )
 
     colData <- colData(sce)

@@ -20,8 +20,7 @@
 .download_zip <-
     function(path)
 {
-    bfc <- BiocFileCache()
-    bfcrpath(bfc, path)
+    bfcrpath(BiocFileCache(), path)
 }
 
 .read_tsv <-
