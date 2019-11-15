@@ -1,4 +1,4 @@
-Package: MtxExperiment
+Package: HCAmtxzip 
 Title: Represent Human Cell Atlas 'MTX' bundles as SummarizedExperiment
 Version: 0.0.1
 Authors@R: 
