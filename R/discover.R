@@ -1,4 +1,6 @@
-.AZUL_SERVICE_URL <- 'https://service.explore.data.humancellatlas.org'
+.DSS_URL <- "https://dss.data.humancellatlas.org/v1"
+
+.AZUL_SERVICE_URL <- "https://service.explore.data.humancellatlas.org"
 
 .S3_BUCKET <-
     "https://s3.amazonaws.com/project-assets.data.humancellatlas.org/"
@@ -19,7 +21,33 @@
     entryId <- vapply(hits, `[[`, character(1), "entryId")
     projectTitle <-
         vapply(hits, function(x) x$projects[[1]]$projectTitle, character(1))
-    tibble(projectTitle, entryId)
+    tibble(projectTitle, entryId, hits)
+}
+
+#' @importFrom dplyr bind_cols bind_rows
+#' @importFrom purrr discard keep modify_if
+#' @importFrom jsonlite fromJSON
+.file <-
+    function(uuid, verbose = FALSE)
+{
+    !verbose || .message(uuid)
+    query <- paste0(.DSS_URL, "/files/", uuid, "?replica=aws")
+    path <- bfcrpath(BiocFileCache(), query)
+    content <- fromJSON(path)
+
+    kv = discard(content, is.data.frame) %>% unlist() %>% bind_rows()
+    tbls = keep(kv, is.data.frame) %>% modify_if(is.data.frame, as_tibble)
+    tbls <- Map(function(tbl, nm) {
+        setNames(tibble(list(tbl)), nm)
+    }, tbls, names(tbls))
+    do.call(bind_cols, c(list(kv), tbls))
+}
+
+.files <-
+    function(uuids, verbose = FALSE)
+{
+    responses <- lapply(uuids, .file, verbose = verbose)
+    do.call(bind_rows, responses)
 }
 
 .s3_chr <-

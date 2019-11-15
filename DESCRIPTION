@@ -27,5 +27,7 @@ Imports:
     utils,
     httr,
     xml2,
-    tibble
+    jsonlite,
+    tibble,
+    purrr
 RoxygenNote: 6.1.1
