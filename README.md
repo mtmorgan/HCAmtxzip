@@ -5,8 +5,10 @@ This package is not mature.
 This package implements tools to access and manipulate Human Cell
 Atlas '.mtx.zip' archives describing single cell expression
 studies. The focus is on the pre-computed matrices available by
-navigating projects on
-[https://data.humancellatlas.org/explore/projects][].
+navigating projects on the Human Cell Atlas Data Portal [project
+summary page][hca_projects].
+
+[hca_projects]: https://data.humancellatlas.org/explore/projects
 
 To install this package and it's dependencies, use BiocManager
 
