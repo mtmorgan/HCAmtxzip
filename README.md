@@ -3,7 +3,7 @@
 This package is not mature.
 
 This package implements tools to access and manipulate Human Cell
-Atlas '.mtx.zip' bundles describing single cell expression
+Atlas '.mtx.zip' archives describing single cell expression
 studies. The focus is on the pre-computed matrices available by
 navigating projects on
 [https://data.humancellatlas.org/explore/projects][].
@@ -42,7 +42,7 @@ dd
 ## 13 Structural Remodel… f8aa201c-… <named… mtx.zip    1.41e8 f8aa201… https://s3…
 ```
 
-Find the smallest bundle and pull the path to the mtx.zip archive
+Find the smallest archive, and pull the path to the mtx.zip archive
 
 ```
 path <- dd %>%
@@ -89,6 +89,14 @@ sce
 ## spikeNames(0):
 ## altExpNames(0):
 ```
+
+The figure below provides a schematic view of the SingleCellExperiment
+-- there is feature x cell matrix of counts, with row and column
+annotations.
+
+![SingleCellExperiment][sce_image]
+
+[sce_image]: https://raw.githubusercontent.com/Bioconductor/SummarizedExperiment/master/vignettes/SE.svg
 
 The object contains a matrix of feature x sample counts, and it's easy
 to discover, e.g., that about 92\% the cells in the matrix are zeros.
@@ -139,7 +147,8 @@ colData_common(sce) %>% print(n=Inf)
 ## 27 analysis_working_group_approval_stat… blessed
 ```
 
-The helper function colData_distinct()` extracts the columns that differ between cells
+The helper function `colData_distinct()` extracts the columns that
+differ between cells
 
 ```
 colData_distinct(sce)
