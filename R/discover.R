@@ -65,14 +65,27 @@
         filter(grepl("^[^.]+\\.(mtx.zip|loom)$", file))
 }
 
-#' Discover AWS S3 buckets with pre-computed HCA files
+#' Discover projects with pre-computed HCA files
 #'
-#' @return A `tibble` describing available samples and the full path
+#' @return A `tibble` describing available projects and the full path
 #'     to the archive.
+#'
+#' @examples
+#' dd <- discover()
+#' dd
+#' dd %>% select(projectTitle)
+#' dd %>%
+#'     filter(grepl("^A single-cell reference", projectTitle)) %>%
+#'     t()
+#' path <- dd %>%
+#'     filter(row_number() == which.min(size)) %>%
+#'     pull(path)
+#' sce <- import.mtxzip(path)
 #'
 #' @importFrom httr GET stop_for_status content
 #' @importFrom xml2 xml_find_all
-#' @importFrom tibble tibble
+#' @importFrom dplyr "%>%" filter left_join
+#' @importFrom tibble tibble as_tibble
 #'
 #' @export
 discover <-
@@ -81,5 +94,5 @@ discover <-
     projects <- .projects()
     buckets <- .buckets()
     suppressMessages(left_join(projects, buckets)) %>%
-        filter(!is.na(fileFormat))
+        filter(grepl("mtx.zip", fileFormat))
 }

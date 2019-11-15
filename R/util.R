@@ -11,6 +11,12 @@
     is.integer(x) && length(x) == 1L && (allow.na || !is.na(x))
 }
 
+.is_scalar_logical <-
+    function(x, allow.na = FALSE)
+{
+    is.logical(x) && length(x) == 1L && (allow.na || !is.na(x))
+}
+
 .message <-
     function(...)
 {
@@ -19,3 +25,10 @@
     TRUE
 }
 
+#' @importFrom utils object.size
+
+.object_size <-
+    function(x)
+{
+    print(object.size(x), units = "auto")
+}

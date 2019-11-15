@@ -9,7 +9,7 @@ Authors@R:
         email = "mtmorgan.bioc@gmail.com",
         comment = c(ORCID = "0000-0002-5874-8148")
     )
-Description: This package enables import of Human Cell Atlas '.zip'
+Description: This package enables import of Human Cell Atlas 'mtx.zip'
     archives of experiments. The package supports direct download of
     files, creating `SingleCellExperiment` objects for interoperation
     with standard Bioconductor single-cell workflows.

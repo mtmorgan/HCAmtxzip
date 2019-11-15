@@ -2,14 +2,27 @@
 % Please edit documentation in R/discover.R
 \name{discover}
 \alias{discover}
-\title{Discover AWS S3 buckets with pre-computed HCA files}
+\title{Discover projects with pre-computed HCA files}
 \usage{
 discover()
 }
 \value{
-A `tibble` describing available samples and the full path
+A `tibble` describing available projects and the full path
     to the archive.
 }
 \description{
-Discover AWS S3 buckets with pre-computed HCA files
+Discover projects with pre-computed HCA files
+}
+\examples{
+dd <- discover()
+dd
+dd \%>\% select(projectTitle)
+dd \%>\%
+    filter(grepl("^A single-cell reference", projectTitle)) \%>\%
+    t()
+path <- dd \%>\%
+    filter(row_number() == which.min(size)) \%>\%
+    pull(path)
+sce <- import.mtxzip(path)
+
 }
