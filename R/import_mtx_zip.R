@@ -1,21 +1,5 @@
-.is_scalar_character <-
-    function(x, allow.na = FALSE, allow.zchar = FALSE)
-{
-    is.character(x) && length(x) == 1L && (allow.na || !is.na(x)) &&
-        (allow.zchar || nzchar(x))
-}
-
-.message <-
-    function(...)
-{
-    ## FIXME: use futile.logger?
-    message(...)
-    TRUE
-}
-
 .MTX_ARCHIVE_FILES <- c(
-    "features.tsv.gz", "genes.tsv.gz", "matrix.mtx.gz", "cells.tsv.gz", 
-    "barcodes.tsv.gz"
+    "features.tsv.gz", "matrix.mtx.gz", "cells.tsv.gz", "barcodes.tsv.gz"
 )
 
 .is_mtx_archive <-
@@ -41,9 +25,13 @@
 }
 
 .read_tsv <-
-    function(path, ..., sep = "\t", header = FALSE)
+    function(path, ..., stringsAsFactors = FALSE, sep = "\t", header = FALSE)
 {
-    read.delim(path, ..., sep = sep, header = header)
+    read.delim(
+        path, ...,
+        stringsAsFactors = stringsAsFactors,
+        sep = sep, header = header
+    )
 }
 
 #' Import Human Cell Atlas '.mtx.zip' archives to SingleCellExperiment
@@ -112,22 +100,18 @@ import.mtxzip <-
     names(ar) <- sub(".(tsv|mtx).gz", "", .MTX_ARCHIVE_FILES)
 
     ## rowData / rowRanges
-    !verbose || .message("rowData / rowRanges")
-    genes <- .read_tsv(ar[["genes"]], header=TRUE, row.names = "featurekey")
-    genes <- makeGRangesFromDataFrame(
-        genes,
-        keep.extra.columns = TRUE,
-        start.field = "featurestart", end.field = "featureend",
-        starts.in.df.are.0based = TRUE
-    )
-    features <- .read_tsv(ar[["features"]]) # FIXME: add to `genes`?
+    !verbose || .message("rowData")
+    features <- .read_tsv(ar[["features"]], row.names = 1)
 
     ## colData
     !verbose || .message("colData")
     cells <- .read_tsv(ar[["cells"]], header = TRUE, row.names = "cellkey")
-    barcodes <-                         # FIXME: add to `cells`?
-        .read_tsv(ar[["barcodes"]], blank.lines.skip = FALSE)
-
+    if (!"barcode" %in% names(cells)) {
+        barcodes <- .read_tsv(
+            ar[["barcodes"]], blank.lines.skip = FALSE, col.names = "barcode"
+        )
+        cells <- cbind(cells, barcodes)
+    }
 
     ## assays
     !verbose || .message("assays")
@@ -137,8 +121,8 @@ import.mtxzip <-
     !verbose || .message("SingleCellExperiment")
     SingleCellExperiment(
         assays = list(counts = counts),
-        colData = cbind(cells, barcodes),
-        rowRanges = genes
+        colData = cells,
+        rowData = features
     )
 }
 
