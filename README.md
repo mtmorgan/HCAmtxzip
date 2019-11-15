@@ -104,8 +104,8 @@ The object contains a matrix of feature x sample counts, and it's easy
 to discover, e.g., that about 92\% the cells in the matrix are zeros.
 
 ```
-## mean(counts(sce) == 0)
-[1] 0.9227145
+mean(assay(sce) == 0)
+## [1] 0.9227145
 ```
 
 Information about each feature can be extracted with `rowData(sce)`,
@@ -194,7 +194,8 @@ names_abbreviate(x, map = TRUE)
 ## 2 common_prefix.a_name  name
 ```
 
-This can make the column names easier to use in an interactive session
+This can make the column names a little easier to use in an
+interactive session.
 
 ```
 colData_distinct(sce, abbreviate_colnames = TRUE)
@@ -244,32 +245,18 @@ There are 6 male and 2 female samples with diverse ethnicity.
 
 ```
 colData_distinct(sce, TRUE) %>%
-    count(donor_organism.provenance.document_id, sex)
-## # A tibble: 8 x 3
-##   donor_organism.provenance.document_id sex        n
-##   <chr>                                 <chr>  <int>
-## 1 42e60811-4a08-45db-8db8-579f718f1675  male     331
-## 2 6f1fd690-f44b-414e-ab7e-ea555b84942c  male     286
-## 3 6fff3e7d-416e-4256-b33a-3448127e505e  female   474
-## 4 a2675857-89d2-41a7-9178-f7c821cbc456  male     272
-## 5 d361a5a0-19c0-4d5c-be21-117e93926292  male     505
-## 6 e89af40b-6ef9-4b6a-8b6a-a51d1d72589c  male     221
-## 7 f5b67f76-92f0-4426-aa6c-888b8865c403  female   277
-## 8 fc0c4a2b-af93-42ec-8b68-10f68a1f622a  male     178
-
-colData_distinct(sce, TRUE) %>%
-    count(donor_organism.provenance.document_id, ethnicity.ontology_label)
-## # A tibble: 8 x 3
-##   donor_organism.provenance.document_id ethnicity.ontology_label               n
-##   <chr>                                 <chr>                              <int>
-## 1 42e60811-4a08-45db-8db8-579f718f1675  European                             331
-## 2 6f1fd690-f44b-414e-ab7e-ea555b84942c  Asian                                286
-## 3 6fff3e7d-416e-4256-b33a-3448127e505e  European                             474
-## 4 a2675857-89d2-41a7-9178-f7c821cbc456  European                             272
-## 5 d361a5a0-19c0-4d5c-be21-117e93926292  European                             505
-## 6 e89af40b-6ef9-4b6a-8b6a-a51d1d72589c  African American or Afro-Caribbean   221
-## 7 f5b67f76-92f0-4426-aa6c-888b8865c403  African American or Afro-Caribbean   277
-## 8 fc0c4a2b-af93-42ec-8b68-10f68a1f622a  ""                                   178
+    count(donor_organism.provenance.document_id, sex, ethnicity.ontology_label)
+## # A tibble: 8 x 4
+##   donor_organism.provenance.documen… sex    ethnicity.ontology_label           n
+##   <chr>                              <chr>  <chr>                          <int>
+## 1 42e60811-4a08-45db-8db8-579f718f1… male   European                         331
+## 2 6f1fd690-f44b-414e-ab7e-ea555b849… male   Asian                            286
+## 3 6fff3e7d-416e-4256-b33a-3448127e5… female European                         474
+## 4 a2675857-89d2-41a7-9178-f7c821cbc… male   European                         272
+## 5 d361a5a0-19c0-4d5c-be21-117e93926… male   European                         505
+## 6 e89af40b-6ef9-4b6a-8b6a-a51d1d725… male   African American or Afro-Cari…   221
+## 7 f5b67f76-92f0-4426-aa6c-888b8865c… female African American or Afro-Cari…   277
+## 8 fc0c4a2b-af93-42ec-8b68-10f68a1f6… male   ""                               178
 ```
 
 The provenance `document_id` serves as a link to addition information
@@ -306,7 +293,7 @@ donor
 ## #   provenance.submission_date <chr>, provenance.update_date <chr>
 ```
 
-We thus learn the age and cause of death of each individual
+We thus learn the sex, age and cause of death of each individual
 
 ```
 donor %>%
@@ -327,8 +314,8 @@ donor %>%
 Similarly detailed information about other aspects of the experiment,
 such as contributors, funding, and publications, can be learned by
 querying `.files()` with additional document identifiers from
-elsewhere in `colData(sce)`. For instance, here's the description of
-the project.
+elsewhere in `colData(sce)`. For instance, here's the (truncated, in
+the HCA) description of the project.
 
 ```
 uuid <- colData_common(sce) %>% 
@@ -373,4 +360,46 @@ pull(project, "project_core.project_description") %>%
 ## processes. Examination of single cells from primary human pancreas tissue
 ```
 
+Here's information about the software in use to produce the above.
 
+```
+> sessionInfo()
+R Under development (unstable) (2019-11-05 r77368)
+Platform: x86_64-apple-darwin17.7.0 (64-bit)
+Running under: macOS High Sierra 10.13.6
+
+Matrix products: default
+BLAS:   /Users/ma38727/bin/R-devel/lib/libRblas.dylib
+LAPACK: /Users/ma38727/bin/R-devel/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] parallel  stats4    stats     graphics  grDevices utils     datasets
+[8] methods   base
+
+other attached packages:
+ [1] HCAmtxzip_0.0.1             dplyr_0.8.3
+ [3] SingleCellExperiment_1.9.0  SummarizedExperiment_1.17.0
+ [5] DelayedArray_0.13.0         BiocParallel_1.21.0
+ [7] matrixStats_0.55.0          Biobase_2.47.0
+ [9] GenomicRanges_1.39.1        GenomeInfoDb_1.23.0
+[11] IRanges_2.21.1              S4Vectors_0.25.0
+[13] BiocGenerics_0.33.0
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.3             dbplyr_1.4.2           compiler_4.0.0
+ [4] pillar_1.4.2           XVector_0.27.0         bitops_1.0-6
+ [7] tools_4.0.0            zlibbioc_1.33.0        digest_0.6.22
+[10] zeallot_0.1.0          bit_1.1-14             jsonlite_1.6
+[13] memoise_1.1.0          BiocFileCache_1.11.2   RSQLite_2.1.2
+[16] tibble_2.1.3           lattice_0.20-38        pkgconfig_2.0.3
+[19] rlang_0.4.1            Matrix_1.2-17          DBI_1.0.0
+[22] curl_4.2               GenomeInfoDbData_1.2.2 xml2_1.2.2
+[25] httr_1.4.1             rappdirs_0.3.1         vctrs_0.2.0
+[28] bit64_0.9-7            grid_4.0.0             tidyselect_0.2.5
+[31] glue_1.3.1             R6_2.4.0               blob_1.2.0
+[34] purrr_0.3.3            magrittr_1.5           backports_1.1.5
+[37] assertthat_0.2.1       RCurl_1.95-4.12        crayon_1.3.4
+```
