@@ -44,21 +44,21 @@ suppressPackageStartupMessages({ library(HCAmtxzip) })
 dd <- available()
 dd
 ## # A tibble: 13 x 5
-##    projectTitle             entryId       hits       size path             
-##    <chr>                    <chr>         <list>    <dbl> <chr>            
-##  1 A single-cell reference… 4a95101c-9ff… <named … 4.94e8 https://data.hum…
-##  2 A single-cell transcrip… 8185730f-411… <named … 1.24e8 https://data.hum…
-##  3 Assessing the relevance… 005d611a-14d… <named … 3.23e8 https://data.hum…
-##  4 Census of Immune Cells   cc95ff89-2e6… <named … 2.39e9 https://data.hum…
-##  5 Dissecting the human li… 4d6f6c96-2a8… <named … 1.67e8 https://data.hum…
-##  6 Ischaemic sensitivity o… c4077b3c-5c9… <named … 1.82e8 https://data.hum…
-##  7 Profiling of CD34+ cell… 091cf39b-01b… <named … 2.54e8 https://data.hum…
-##  8 Reconstructing the huma… f83165c5-e2e… <named … 1.32e9 https://data.hum…
-##  9 Single cell profiling o… 116965f3-f09… <named … 6.49e7 https://data.hum…
-## 10 Single cell transcripto… cddab57b-686… <named … 6.24e7 https://data.hum…
-## 11 Single-cell RNA-seq ana… 2043c65a-1cf… <named … 7.67e7 https://data.hum…
-## 12 Spatio-temporal immune … abe1a013-af7… <named … 5.22e8 https://data.hum…
-## 13 Structural Remodeling o… f8aa201c-4ff… <named … 1.41e8 https://data.hum…
+##    projectTitle               entryId        hits      size path                
+##    <chr>                      <chr>          <list>   <dbl> <chr>               
+##  1 A single-cell reference m… 4a95101c-9ffc… <named… 4.94e8 https://data.humanc…
+##  2 A single-cell transcripto… 8185730f-4113… <named… 1.24e8 https://data.humanc…
+##  3 Assessing the relevance o… 005d611a-14d5… <named… 3.23e8 https://data.humanc…
+##  4 Census of Immune Cells     cc95ff89-2e68… <named… 2.39e9 https://data.humanc…
+##  5 Dissecting the human live… 4d6f6c96-2a83… <named… 1.67e8 https://data.humanc…
+##  6 Ischaemic sensitivity of … c4077b3c-5c98… <named… 1.82e8 https://data.humanc…
+##  7 Profiling of CD34+ cells … 091cf39b-01bc… <named… 2.54e8 https://data.humanc…
+##  8 Reconstructing the human … f83165c5-e2ea… <named… 1.32e9 https://data.humanc…
+##  9 Single cell profiling of … 116965f3-f094… <named… 6.49e7 https://data.humanc…
+## 10 Single cell transcriptome… cddab57b-6868… <named… 6.24e7 https://data.humanc…
+## 11 Single-cell RNA-seq analy… 2043c65a-1cf8… <named… 7.67e7 https://data.humanc…
+## 12 Spatio-temporal immune zo… abe1a013-af7a… <named… 5.22e8 https://data.humanc…
+## 13 Structural Remodeling of … f8aa201c-4ff1… <named… 1.41e8 https://data.humanc…
 ```
 
 Find the smallest archive, and pull the path to the mtx.zip archive
@@ -95,8 +95,8 @@ sce
 ## dim: 58347 2544 
 ## metadata(0):
 ## assays(1): counts
-## rownames(58347): ENSG00000000003 ENSG00000000005 ...
-##   ENSG00000284747 ENSG00000284748
+## rownames(58347): ENSG00000000003 ENSG00000000005 ... ENSG00000284747
+##   ENSG00000284748
 ## rowData names(8): V2 V3 ... V8 V9
 ## colnames(2544): 00ca0d37-b787-41a4-be59-2aff5b13b0bd
 ##   0103aed0-29c2-4b29-a02a-2b58036fe875 ...
@@ -136,19 +136,19 @@ with this data using the 'tidy' framework, with `rowDataTibbe()` and
 ```r
 colDataTibble(sce)
 ## # A tibble: 2,544 x 43
-##    genes_detected file_uuid file_version total_umis emptydrops_is_c…
-##             <int> <chr>     <chr>        <lgl>      <lgl>           
-##  1           6924 6770c8ea… 2019-05-15T… NA         NA              
-##  2           3171 68efbcbe… 2019-05-30T… NA         NA              
-##  3           3838 209d615a… 2019-05-14T… NA         NA              
-##  4           4111 143a7005… 2019-05-14T… NA         NA              
-##  5           5834 45e82c84… 2019-05-14T… NA         NA              
-##  6           2564 cb0b32b2… 2019-05-14T… NA         NA              
-##  7           3152 2b5338c5… 2019-05-14T… NA         NA              
-##  8           6375 66515cc6… 2019-05-14T… NA         NA              
-##  9           4650 45e89c83… 2019-05-14T… NA         NA              
-## 10           4420 476dc6ce… 2019-05-14T… NA         NA              
-## # … with 2,534 more rows, and 38 more variables: barcode <lgl>,
+##    genes_detected file_uuid file_version total_umis emptydrops_is_c… barcode
+##             <int> <chr>     <chr>        <lgl>      <lgl>            <lgl>  
+##  1           6924 6770c8ea… 2019-05-15T… NA         NA               NA     
+##  2           3171 68efbcbe… 2019-05-30T… NA         NA               NA     
+##  3           3838 209d615a… 2019-05-14T… NA         NA               NA     
+##  4           4111 143a7005… 2019-05-14T… NA         NA               NA     
+##  5           5834 45e82c84… 2019-05-14T… NA         NA               NA     
+##  6           2564 cb0b32b2… 2019-05-14T… NA         NA               NA     
+##  7           3152 2b5338c5… 2019-05-14T… NA         NA               NA     
+##  8           6375 66515cc6… 2019-05-14T… NA         NA               NA     
+##  9           4650 45e89c83… 2019-05-14T… NA         NA               NA     
+## 10           4420 476dc6ce… 2019-05-14T… NA         NA               NA     
+## # … with 2,534 more rows, and 37 more variables:
 ## #   cell_suspension.provenance.document_id <chr>,
 ## #   specimen_from_organism.provenance.document_id <chr>,
 ## #   derived_organ_ontology <chr>, derived_organ_label <chr>,
@@ -193,35 +193,35 @@ involves the pancreas islet of Langerhans.
 colDataConstants(sce) %>%
     print(n = Inf)
 ## # A tibble: 27 x 2
-##    column                               value                              
-##    <chr>                                <chr>                              
-##  1 total_umis                           <NA>                               
-##  2 emptydrops_is_cell                   <NA>                               
-##  3 barcode                              <NA>                               
-##  4 derived_organ_ontology               UBERON:0001264                     
-##  5 derived_organ_label                  pancreas                           
-##  6 derived_organ_parts_ontology         UBERON:0000006                     
-##  7 derived_organ_parts_label            islet of Langerhans                
-##  8 cell_suspension.genus_species.ontol… NCBITaxon:9606                     
-##  9 cell_suspension.genus_species.ontol… Homo sapiens                       
-## 10 donor_organism.diseases.ontology     PATO:0000461                       
-## 11 donor_organism.diseases.ontology_la… normal                             
-## 12 donor_organism.is_living             no                                 
-## 13 specimen_from_organism.organ.ontolo… UBERON:0001264                     
-## 14 specimen_from_organism.organ.ontolo… pancreas                           
-## 15 specimen_from_organism.organ_parts.… UBERON:0000006                     
-## 16 specimen_from_organism.organ_parts.… islet of Langerhans                
-## 17 library_preparation_protocol.proven… 3ab6b486-f900-4f70-ab34-98859ac5f7…
-## 18 library_preparation_protocol.input_… OBI:0000869                        
-## 19 library_preparation_protocol.input_… polyA RNA extract                  
-## 20 library_preparation_protocol.librar… EFO:0008931                        
-## 21 library_preparation_protocol.librar… Smart-seq2                         
-## 22 library_preparation_protocol.end_bi… full length                        
-## 23 library_preparation_protocol.strand  unstranded                         
-## 24 project.provenance.document_id       cddab57b-6868-4be4-806f-395ed9dd63…
-## 25 project.project_core.project_short_… Single cell transcriptome analysis…
-## 26 project.project_core.project_title   Single cell transcriptome analysis…
-## 27 analysis_working_group_approval_sta… blessed
+##    column                                value                                  
+##    <chr>                                 <chr>                                  
+##  1 total_umis                            <NA>                                   
+##  2 emptydrops_is_cell                    <NA>                                   
+##  3 barcode                               <NA>                                   
+##  4 derived_organ_ontology                UBERON:0001264                         
+##  5 derived_organ_label                   pancreas                               
+##  6 derived_organ_parts_ontology          UBERON:0000006                         
+##  7 derived_organ_parts_label             islet of Langerhans                    
+##  8 cell_suspension.genus_species.ontolo… NCBITaxon:9606                         
+##  9 cell_suspension.genus_species.ontolo… Homo sapiens                           
+## 10 donor_organism.diseases.ontology      PATO:0000461                           
+## 11 donor_organism.diseases.ontology_lab… normal                                 
+## 12 donor_organism.is_living              no                                     
+## 13 specimen_from_organism.organ.ontology UBERON:0001264                         
+## 14 specimen_from_organism.organ.ontolog… pancreas                               
+## 15 specimen_from_organism.organ_parts.o… UBERON:0000006                         
+## 16 specimen_from_organism.organ_parts.o… islet of Langerhans                    
+## 17 library_preparation_protocol.provena… 3ab6b486-f900-4f70-ab34-98859ac5f77a   
+## 18 library_preparation_protocol.input_n… OBI:0000869                            
+## 19 library_preparation_protocol.input_n… polyA RNA extract                      
+## 20 library_preparation_protocol.library… EFO:0008931                            
+## 21 library_preparation_protocol.library… Smart-seq2                             
+## 22 library_preparation_protocol.end_bias full length                            
+## 23 library_preparation_protocol.strand   unstranded                             
+## 24 project.provenance.document_id        cddab57b-6868-4be4-806f-395ed9dd635a   
+## 25 project.project_core.project_short_n… Single cell transcriptome analysis of …
+## 26 project.project_core.project_title    Single cell transcriptome analysis of …
+## 27 analysis_working_group_approval_stat… blessed
 ```
 
 The function `colDataBrief()` extracts the columns that differ between
@@ -295,20 +295,20 @@ count <-
     count(donor_organism.provenance.document_id, sex, ethnicity.ontology_label)
 count
 ## # A tibble: 8 x 4
-##   donor_organism.provenance.docu… sex    ethnicity.ontology_label         n
-##   <chr>                           <chr>  <chr>                        <int>
-## 1 42e60811-4a08-45db-8db8-579f71… male   European                       331
-## 2 6f1fd690-f44b-414e-ab7e-ea555b… male   Asian                          286
-## 3 6fff3e7d-416e-4256-b33a-344812… female European                       474
-## 4 a2675857-89d2-41a7-9178-f7c821… male   European                       272
-## 5 d361a5a0-19c0-4d5c-be21-117e93… male   European                       505
-## 6 e89af40b-6ef9-4b6a-8b6a-a51d1d… male   African American or Afro-Ca…   221
-## 7 f5b67f76-92f0-4426-aa6c-888b88… female African American or Afro-Ca…   277
-## 8 fc0c4a2b-af93-42ec-8b68-10f68a… male   ""                             178
+##   donor_organism.provenance.documen… sex    ethnicity.ontology_label           n
+##   <chr>                              <chr>  <chr>                          <int>
+## 1 42e60811-4a08-45db-8db8-579f718f1… male   European                         331
+## 2 6f1fd690-f44b-414e-ab7e-ea555b849… male   Asian                            286
+## 3 6fff3e7d-416e-4256-b33a-3448127e5… female European                         474
+## 4 a2675857-89d2-41a7-9178-f7c821cbc… male   European                         272
+## 5 d361a5a0-19c0-4d5c-be21-117e93926… male   European                         505
+## 6 e89af40b-6ef9-4b6a-8b6a-a51d1d725… male   African American or Afro-Cari…   221
+## 7 f5b67f76-92f0-4426-aa6c-888b8865c… female African American or Afro-Cari…   277
+## 8 fc0c4a2b-af93-42ec-8b68-10f68a1f6… male   ""                               178
 ```
 
 The provenance `document_id` serves as a link to addition information
-about the samples. The additional infomration can be extracted by
+about the samples. The additional information can be extracted by
 querying the HCA DSS. The information is returned as JSON, which is
 relatively difficult to deal with in _R_; the even-less-mature
 function `.files()` tries to parse this into a sensible format.
@@ -328,24 +328,48 @@ We thus learn the sex, age and cause of death of each individual
 donor %>%
     select(provenance.document_id, sex, organism_age, death.cause_of_death)
 ## # A tibble: 8 x 4
-##   provenance.document_id            sex    organism_age death.cause_of_dea…
-##   <chr>                             <chr>  <chr>        <chr>              
-## 1 d361a5a0-19c0-4d5c-be21-117e9392… male   21           anoxia             
-## 2 e89af40b-6ef9-4b6a-8b6a-a51d1d72… male   1            anoxia             
-## 3 42e60811-4a08-45db-8db8-579f718f… male   5            auto accident      
-## 4 6f1fd690-f44b-414e-ab7e-ea555b84… male   22           head trauma        
-## 5 f5b67f76-92f0-4426-aa6c-888b8865… female 44           stroke             
-## 6 6fff3e7d-416e-4256-b33a-3448127e… female 38           stroke             
-## 7 a2675857-89d2-41a7-9178-f7c821cb… male   54           anoxia             
-## 8 fc0c4a2b-af93-42ec-8b68-10f68a1f… male   6            head trauma
+##   provenance.document_id               sex    organism_age death.cause_of_death
+##   <chr>                                <chr>  <chr>        <chr>               
+## 1 d361a5a0-19c0-4d5c-be21-117e93926292 male   21           anoxia              
+## 2 e89af40b-6ef9-4b6a-8b6a-a51d1d72589c male   1            anoxia              
+## 3 42e60811-4a08-45db-8db8-579f718f1675 male   5            auto accident       
+## 4 6f1fd690-f44b-414e-ab7e-ea555b84942c male   22           head trauma         
+## 5 f5b67f76-92f0-4426-aa6c-888b8865c403 female 44           stroke              
+## 6 6fff3e7d-416e-4256-b33a-3448127e505e female 38           stroke              
+## 7 a2675857-89d2-41a7-9178-f7c821cbc456 male   54           anoxia              
+## 8 fc0c4a2b-af93-42ec-8b68-10f68a1f622a male   6            head trauma
 ```
 
 The information on donor could be joined with the count summary, or
 with the entire data set using `left_join()`
 
-```
+
+```r
 left_join(count, donor)
+## Joining, by = c("donor_organism.provenance.document_id", "sex")
+## # A tibble: 8 x 24
+##   donor_organism.… sex   ethnicity.ontol…     n describedBy schema_type
+##   <chr>            <chr> <chr>            <int> <chr>       <chr>      
+## 1 42e60811-4a08-4… male  European           331 https://sc… biomaterial
+## 2 6f1fd690-f44b-4… male  Asian              286 https://sc… biomaterial
+## 3 6fff3e7d-416e-4… fema… European           474 https://sc… biomaterial
+## 4 a2675857-89d2-4… male  European           272 https://sc… biomaterial
+## 5 d361a5a0-19c0-4… male  European           505 https://sc… biomaterial
+## 6 e89af40b-6ef9-4… male  African America…   221 https://sc… biomaterial
+## 7 f5b67f76-92f0-4… fema… African America…   277 https://sc… biomaterial
+## 8 fc0c4a2b-af93-4… male  ""                 178 https://sc… biomaterial
+## # … with 18 more variables: biomaterial_core.biomaterial_id <chr>,
+## #   biomaterial_core.ncbi_taxon_id <chr>, is_living <chr>, organism_age <chr>,
+## #   organism_age_unit.text <chr>, organism_age_unit.ontology <chr>,
+## #   organism_age_unit.ontology_label <chr>,
+## #   human_specific.body_mass_index <chr>, human_specific.ethnicity.text <chr>,
+## #   human_specific.ethnicity.ontology <chr>,
+## #   human_specific.ethnicity.ontology_label <chr>, death.cause_of_death <chr>,
+## #   development_stage.text <chr>, development_stage.ontology_label <chr>,
+## #   development_stage.ontology <chr>, provenance.document_id <chr>,
+## #   provenance.submission_date <chr>, provenance.update_date <chr>
 all <- left_join(colDataTibble(sce), donor)
+## Joining, by = "donor_organism.provenance.document_id"
 ```
 
 Similarly detailed information about other aspects of the experiment,
@@ -361,14 +385,13 @@ project <- colDataTibble(sce) %>%
     HCAmtxzip:::.files(project.provenance.document_id)
 project
 ## # A tibble: 1 x 12
-##   project.provena… describedBy schema_type project_core.pr…
-##   <chr>            <chr>       <chr>       <chr>           
-## 1 cddab57b-6868-4… https://sc… project     Single cell tra…
-## # … with 8 more variables: project_core.project_title <chr>,
-## #   project_core.project_description <chr>, supplementary_links <chr>,
-## #   insdc_project_accessions <chr>, geo_series_accessions <chr>,
-## #   provenance.document_id <chr>, provenance.submission_date <chr>,
-## #   provenance.update_date <chr>
+##   project.provena… describedBy schema_type project_core.pr… project_core.pr…
+##   <chr>            <chr>       <chr>       <chr>            <chr>           
+## 1 cddab57b-6868-4… https://sc… project     Single cell tra… Single cell tra…
+## # … with 7 more variables: project_core.project_description <chr>,
+## #   supplementary_links <chr>, insdc_project_accessions <chr>,
+## #   geo_series_accessions <chr>, provenance.document_id <chr>,
+## #   provenance.submission_date <chr>, provenance.update_date <chr>
 pull(project, "project_core.project_description") %>%
     strwrap(width = 80) %>%
     cat(sep="\n")
@@ -429,13 +452,13 @@ sessionInfo()
 ## [13] BiocGenerics_0.33.0        
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] tidyselect_0.2.5       xfun_0.10              purrr_0.3.3           
+##  [1] tidyselect_0.2.5       xfun_0.11              purrr_0.3.3           
 ##  [4] lattice_0.20-38        vctrs_0.2.0            BiocFileCache_1.11.2  
 ##  [7] utf8_1.1.4             blob_1.2.0             rlang_0.4.1           
 ## [10] pillar_1.4.2           glue_1.3.1             DBI_1.0.0             
 ## [13] rappdirs_0.3.1         bit64_0.9-7            dbplyr_1.4.2          
 ## [16] GenomeInfoDbData_1.2.2 stringr_1.4.0          zlibbioc_1.33.0       
-## [19] evaluate_0.14          memoise_1.1.0          knitr_1.25            
+## [19] evaluate_0.14          memoise_1.1.0          knitr_1.26            
 ## [22] curl_4.2               fansi_0.4.0            Rcpp_1.0.3            
 ## [25] backports_1.1.5        jsonlite_1.6           XVector_0.27.0        
 ## [28] bit_1.1-14             digest_0.6.22          stringi_1.4.3         
@@ -444,5 +467,5 @@ sessionInfo()
 ## [37] tibble_2.1.3           RSQLite_2.1.2          crayon_1.3.4          
 ## [40] pkgconfig_2.0.3        zeallot_0.1.0          Matrix_1.2-17         
 ## [43] xml2_1.2.2             assertthat_0.2.1       httr_1.4.1            
-## [46] R6_2.4.0               compiler_4.0.0
+## [46] R6_2.4.1               compiler_4.0.0
 ```

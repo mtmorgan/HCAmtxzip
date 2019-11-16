@@ -146,7 +146,7 @@ count
 ```
 
 The provenance `document_id` serves as a link to addition information
-about the samples. The additional infomration can be extracted by
+about the samples. The additional information can be extracted by
 querying the HCA DSS. The information is returned as JSON, which is
 relatively difficult to deal with in _R_; the even-less-mature
 function `.files()` tries to parse this into a sensible format.
@@ -168,7 +168,7 @@ donor %>%
 The information on donor could be joined with the count summary, or
 with the entire data set using `left_join()`
 
-```
+```{r}
 left_join(count, donor)
 all <- left_join(colDataTibble(sce), donor)
 ```
