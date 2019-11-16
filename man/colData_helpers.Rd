@@ -7,7 +7,7 @@
 \alias{names_abbreviate}
 \title{Helper functions for simplifying colData}
 \usage{
-colData_tibble(sce)
+colData_tibble(sce, abbreviate_colnames = FALSE)
 
 colData_common(sce, abbreviate_colnames = FALSE)
 

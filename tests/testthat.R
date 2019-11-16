@@ -1,4 +1,4 @@
 library(testthat)
-library(HCAmtxzip )
+library(HCAmtxzip)
 
-test_check("HCAmtxzip ")
+test_check("HCAmtxzip")
