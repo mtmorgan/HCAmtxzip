@@ -1,0 +1,184 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "##",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# HCAmtxzip
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+This package is not mature.
+
+This package implements tools to access and manipulate Human Cell
+Atlas '.mtx.zip' archives describing single cell expression
+studies. The focus is on the pre-computed matrices available by
+navigating projects on the Human Cell Atlas Data Portal [project
+summary page][hca_projects].
+
+[hca_projects]: https://data.humancellatlas.org/explore/projects
+
+## Installation
+
+To install this package and it's dependencies, use BiocManager
+
+```{r install, eval = FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager", repos = "https://cran.r-project.org")
+
+BiocManager::install("mtmorgan/HCAmtxzip")
+```
+
+Load the package and discover project titles for which pre-computed
+mtx.zip archives are available
+
+```{r discover}
+suppressPackageStartupMessages({ library(HCAmtxzip) })
+dd = discover()
+dd
+```
+
+Find the smallest archive, and pull the path to the mtx.zip archive
+
+```{r}
+path <- dd %>%
+    filter(row_number() == which.min(size)) %>%
+    pull(path)
+```
+
+Download, unzip, and import the archive into _R_; the download is
+cached (using [BiocFileCache][]) so only necessary once. The imported
+data is represented as a [SingleCellExperiment][], a data structure at
+the heart of _Bioconductor_ packages [orchestrating single cell
+analysis][osca]. The `dim` output shows that there are 58347 features
+assayed across 2544 cells.
+
+[BiocFileCache]: https://bioconductor.org/packages/BiocFileCache
+[SingleCellExperiment]: https://bioconductor.org/packages/SingleCellExperiment
+[osca]: https://osca.bioconductor.org
+
+```{r import}
+sce <- import.mtxzip(path, verbose = TRUE)
+sce
+```
+
+The figure below provides a schematic view of the SingleCellExperiment
+-- there is feature x cell matrix of counts, with row and column
+annotations.
+
+![sce][sce_image]
+
+[sce_image]: https://raw.githubusercontent.com/Bioconductor/SummarizedExperiment/master/vignettes/SE.svg?sanitize=true
+
+The object contains a matrix of feature x sample counts, and it's easy
+to discover, e.g., that about 92\% the cells in the matrix are zeros.
+
+```{r}
+mean(assay(sce) == 0)
+```
+
+Information about each feature can be extracted with `rowData(sce)`,
+and about each cell with `colData(sce)`. Much of the `colData()` is
+constant across all cells, e.g., they all come from the same
+experiment. A helper function `colData_common()` summarizes these
+common features, where we learn for instance that the experiment
+involves the pancreas islet of Langerhans.
+
+```{r}
+colData_common(sce) %>% print(n=Inf)
+```
+
+The helper function `colData_distinct()` extracts the columns that
+differ between cells
+
+```{r}
+colData_distinct(sce)
+```
+
+An additional helper function shortens column names to the shortest
+'word' (defined by the occurence of `_` or `.`) suffix, as illustrated
+with
+
+```{r}
+x <- setNames(nm = c("common_prefix.a_title", "common_prefix.a_name"))
+names_abbreviate(x)
+names_abbreviate(x, map = TRUE)
+```
+
+This can make the column names a little easier to use in an
+interactive session.
+
+```{r}
+colData_distinct(sce, abbreviate_colnames = TRUE)
+```
+
+Some exploration suggests that the column
+`donor_organism.provenance.document_id` defines each biological
+sample, so we see that the experiment consists of 8 individuals with
+between 178 and 505 cells per individual.
+
+```{r}
+colData_distinct(sce, TRUE) %>%
+    count(donor_organism.provenance.document_id)
+```
+
+There are 6 male and 2 female samples with diverse ethnicity.
+
+```{r}
+colData_distinct(sce, TRUE) %>%
+    count(donor_organism.provenance.document_id, sex, ethnicity.ontology_label)
+```
+
+The provenance `document_id` serves as a link to addition information
+about the samples. The additional infomration can be extracted by
+querying the HCA DSS. The information is returned as JSON, which is
+relatively difficult to deal with in _R_; the even-less-mature
+function `.files()` tries to parse this into a sensible format.
+
+```{r donor_files}
+uuids <- colData_distinct(sce, TRUE) %>%
+    count(donor_organism.provenance.document_id) %>%
+    pull(donor_organism.provenance.document_id)
+donor <- HCAmtxzip:::.files(uuids)
+donor
+```
+
+We thus learn the sex, age and cause of death of each individual
+
+```{r}
+donor %>%
+    select(provenance.document_id, sex, organism_age, death.cause_of_death)
+```
+
+Similarly detailed information about other aspects of the experiment,
+such as contributors, funding, and publications, can be learned by
+querying `.files()` with additional document identifiers from
+elsewhere in `colData(sce)`. For instance, here's the (truncated, in
+the HCA) description of the project.
+
+```{r project_files}
+uuid <- colData_common(sce) %>% 
+    filter(key %in% "project.provenance.document_id") %>% 
+    pull(value)
+project <- HCAmtxzip:::.files(uuid)
+project
+pull(project, "project_core.project_description") %>%
+    strwrap(width = 80) %>%
+    cat(sep="\n")
+```
+
+Here's information about the software in use to produce the above.
+
+```{r sessionInfo}
+sessionInfo()
+```
