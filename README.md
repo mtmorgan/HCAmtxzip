@@ -41,22 +41,22 @@ mtx.zip archives are available
 suppressPackageStartupMessages({ library(HCAmtxzip) })
 dd <- discover()
 dd
-## # A tibble: 13 x 7
-##    projectTitle      entryId    hits   fileFormat   size file    path      
-##    <chr>             <chr>      <list> <chr>       <dbl> <chr>   <chr>     
-##  1 A single-cell re… 4a95101c-… <name… mtx.zip    4.94e8 4a9510… https://s…
-##  2 A single-cell tr… 8185730f-… <name… mtx.zip    1.24e8 818573… https://s…
-##  3 Assessing the re… 005d611a-… <name… mtx.zip    3.23e8 005d61… https://s…
-##  4 Census of Immune… cc95ff89-… <name… mtx.zip    2.39e9 cc95ff… https://s…
-##  5 Dissecting the h… 4d6f6c96-… <name… mtx.zip    1.67e8 4d6f6c… https://s…
-##  6 Ischaemic sensit… c4077b3c-… <name… mtx.zip    1.82e8 c4077b… https://s…
-##  7 Profiling of CD3… 091cf39b-… <name… mtx.zip    2.54e8 091cf3… https://s…
-##  8 Reconstructing t… f83165c5-… <name… mtx.zip    1.32e9 f83165… https://s…
-##  9 Single cell prof… 116965f3-… <name… mtx.zip    6.49e7 116965… https://s…
-## 10 Single cell tran… cddab57b-… <name… mtx.zip    6.24e7 cddab5… https://s…
-## 11 Single-cell RNA-… 2043c65a-… <name… mtx.zip    7.67e7 2043c6… https://s…
-## 12 Spatio-temporal … abe1a013-… <name… mtx.zip    5.22e8 abe1a0… https://s…
-## 13 Structural Remod… f8aa201c-… <name… mtx.zip    1.41e8 f8aa20… https://s…
+## # A tibble: 13 x 5
+##    projectTitle             entryId       hits       size path             
+##    <chr>                    <chr>         <list>    <dbl> <chr>            
+##  1 A single-cell reference… 4a95101c-9ff… <named … 4.94e8 https://data.hum…
+##  2 A single-cell transcrip… 8185730f-411… <named … 1.24e8 https://data.hum…
+##  3 Assessing the relevance… 005d611a-14d… <named … 3.23e8 https://data.hum…
+##  4 Census of Immune Cells   cc95ff89-2e6… <named … 2.39e9 https://data.hum…
+##  5 Dissecting the human li… 4d6f6c96-2a8… <named … 1.67e8 https://data.hum…
+##  6 Ischaemic sensitivity o… c4077b3c-5c9… <named … 1.82e8 https://data.hum…
+##  7 Profiling of CD34+ cell… 091cf39b-01b… <named … 2.54e8 https://data.hum…
+##  8 Reconstructing the huma… f83165c5-e2e… <named … 1.32e9 https://data.hum…
+##  9 Single cell profiling o… 116965f3-f09… <named … 6.49e7 https://data.hum…
+## 10 Single cell transcripto… cddab57b-686… <named … 6.24e7 https://data.hum…
+## 11 Single-cell RNA-seq ana… 2043c65a-1cf… <named … 7.67e7 https://data.hum…
+## 12 Spatio-temporal immune … abe1a013-af7… <named … 5.22e8 https://data.hum…
+## 13 Structural Remodeling o… f8aa201c-4ff… <named … 1.41e8 https://data.hum…
 ```
 
 Find the smallest archive, and pull the path to the mtx.zip archive
@@ -271,7 +271,6 @@ There are 6 male and 2 female samples with diverse ethnicity.
 count <-
     colData_tibble(sce, TRUE) %>%
     count(donor_organism.provenance.document_id, sex, ethnicity.ontology_label)
-## Error in colData_tibble(sce, TRUE): unused argument (TRUE)
 ```
 
 The provenance `document_id` serves as a link to addition information
@@ -285,8 +284,7 @@ function `.files()` tries to parse this into a sensible format.
 donor <-
     colData_tibble(sce) %>%
     distinct(donor_organism.provenance.document_id) %>%
-    .files(donor_organism.provenance.document_id)
-## Error in .files(., donor_organism.provenance.document_id): could not find function ".files"
+    HCAmtxzip:::.files(donor_organism.provenance.document_id)
 ```
 
 We thus learn the sex, age and cause of death of each individual
@@ -295,7 +293,17 @@ We thus learn the sex, age and cause of death of each individual
 ```r
 donor %>%
     select(provenance.document_id, sex, organism_age, death.cause_of_death)
-## Error in eval(lhs, parent, parent): object 'donor' not found
+## # A tibble: 8 x 4
+##   provenance.document_id            sex    organism_age death.cause_of_dea…
+##   <chr>                             <chr>  <chr>        <chr>              
+## 1 d361a5a0-19c0-4d5c-be21-117e9392… male   21           anoxia             
+## 2 e89af40b-6ef9-4b6a-8b6a-a51d1d72… male   1            anoxia             
+## 3 42e60811-4a08-45db-8db8-579f718f… male   5            auto accident      
+## 4 6f1fd690-f44b-414e-ab7e-ea555b84… male   22           head trauma        
+## 5 f5b67f76-92f0-4426-aa6c-888b8865… female 44           stroke             
+## 6 6fff3e7d-416e-4256-b33a-3448127e… female 38           stroke             
+## 7 a2675857-89d2-41a7-9178-f7c821cb… male   54           anoxia             
+## 8 fc0c4a2b-af93-42ec-8b68-10f68a1f… male   6            head trauma
 ```
 
 The information on donor could be joined with the count summary, or
@@ -316,14 +324,43 @@ the HCA) description of the project.
 ```r
 project <- colData_tibble(sce) %>%
     distinct(project.provenance.document_id) %>%
-    .files(project.provenance.document_id)
-## Error in .files(., project.provenance.document_id): could not find function ".files"
+    HCAmtxzip:::.files(project.provenance.document_id)
 project
-## Error in eval(expr, envir, enclos): object 'project' not found
+## # A tibble: 1 x 12
+##   project.provena… describedBy schema_type project_core.pr…
+##   <chr>            <chr>       <chr>       <chr>           
+## 1 cddab57b-6868-4… https://sc… project     Single cell tra…
+## # … with 8 more variables: project_core.project_title <chr>,
+## #   project_core.project_description <chr>, supplementary_links <chr>,
+## #   insdc_project_accessions <chr>, geo_series_accessions <chr>,
+## #   provenance.document_id <chr>, provenance.submission_date <chr>,
+## #   provenance.update_date <chr>
 pull(project, "project_core.project_description") %>%
     strwrap(width = 80) %>%
     cat(sep="\n")
-## Error in pull(project, "project_core.project_description"): object 'project' not found
+## As organisms age, cells accumulate genetic and epigenetic changes that
+## eventually lead to impaired organ function or catastrophic failure such as
+## cancer. Here we describe a single-cell transcriptome analysis of 2544 human
+## pancreas cells from donors, spanning six decades of life. We find that islet
+## cells from older donors have increased levels of disorder as measured both by
+## noise in the transcriptome and by the number of cells which display
+## inappropriate hormone expression, revealing a transcriptional instability
+## associated with aging. By analyzing the spectrum of somatic mutations in single
+## cells from previously-healthy donors, we find a specific age-dependent
+## mutational signature characterized by C to A and C to G transversions,
+## indicators of oxidative stress, which is absent in single cells from human
+## brain tissue or in a tumor cell line. Cells carrying a high load of such
+## mutations also express higher levels of stress and senescence markers,
+## including FOS, JUN, and the cytoplasmic superoxide dismutase SOD1, markers
+## previously linked to pancreatic diseases with substantial age-dependent risk,
+## such as type 2 diabetes mellitus and adenocarcinoma. Thus, our single-cell
+## approach unveils gene expression changes and somatic mutations acquired in
+## aging human tissue, and identifies molecular pathways induced by these genetic
+## changes that could influence human disease. Also, our results demonstrate the
+## feasibility of using single-cell RNA-seq data from primary cells to derive
+## meaningful insights into the genetic processes that operate on aging human
+## tissue and to determine which molecular mechanisms are coordinated with these
+## processes. Examination of single cells from primary human pancreas tissue
 ```
 
 Here's information about the software in use to produce the above.
@@ -347,7 +384,7 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] HCAmtxzip_0.0.1             dplyr_0.8.3                
+##  [1] HCAmtxzip_0.0.2             dplyr_0.8.3                
 ##  [3] SingleCellExperiment_1.9.0  SummarizedExperiment_1.17.0
 ##  [5] DelayedArray_0.13.0         BiocParallel_1.21.0        
 ##  [7] matrixStats_0.55.0          Biobase_2.47.0             

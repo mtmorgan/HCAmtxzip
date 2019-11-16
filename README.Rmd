@@ -150,7 +150,7 @@ function `.files()` tries to parse this into a sensible format.
 donor <-
     colData_tibble(sce) %>%
     distinct(donor_organism.provenance.document_id) %>%
-    .files(donor_organism.provenance.document_id)
+    HCAmtxzip:::.files(donor_organism.provenance.document_id)
 ```
 
 We thus learn the sex, age and cause of death of each individual
@@ -177,7 +177,7 @@ the HCA) description of the project.
 ```{r project_files}
 project <- colData_tibble(sce) %>%
     distinct(project.provenance.document_id) %>%
-    .files(project.provenance.document_id)
+    HCAmtxzip:::.files(project.provenance.document_id)
 project
 pull(project, "project_core.project_description") %>%
     strwrap(width = 80) %>%
