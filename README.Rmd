@@ -42,6 +42,8 @@ BiocManager::install("mtmorgan/HCAmtxzip")
 Load the package and discover project titles for which pre-computed
 mtx.zip archives are available
 
+## Discovery and import
+
 ```{r discover}
 suppressPackageStartupMessages({ library(HCAmtxzip) })
 dd <- discover()
@@ -88,39 +90,41 @@ mean(assay(sce) == 0)
 ```
 
 Information about each feature can be extracted with `rowData(sce)`,
-and about each cell with `colData(sce)`. Much of the `colData()` is
-constant across all cells, e.g., they all come from the same
-experiment. A helper function `colData_common()` summarizes these
-common features, where we learn for instance that the experiment
+and about each cell with `colData(sce)`; it's often convenient to work
+with this data using the 'tidy' framework, with `rowDataTibbe()` and
+`colDataTibble()` providing relevant access
+
+```{r}
+colDataTibble(sce)
+```
+
+Much of the `colData()` is constant across all cells, e.g., they all
+come from the same experiment. Use `colDataConstants()` to access
+these common features, where we learn for instance that the experiment
 involves the pancreas islet of Langerhans.
 
 ```{r}
-colData_common(sce) %>% print(n=Inf)
+colDataConstants(sce) %>%
+    print(n = Inf)
 ```
 
-The helper function `colData_distinct()` extracts the columns that
-differ between cells
-
-```{r}
-colData_distinct(sce)
-```
-
-An additional helper function shortens column names to the shortest
-'word' (defined by the occurence of `_` or `.`) suffix, as illustrated
-with
+The function `colDataBrief()` extracts the columns that differ between
+cells, and shortens column names to the shortest 'word' (defined by
+the occurence of `_` or `.`) suffix, as illustrated with
 
 ```{r}
 x <- setNames(nm = c("common_prefix.a_title", "common_prefix.a_name"))
-names_abbreviate(x)
-names_abbreviate(x, map = TRUE)
+HCAmtxzip:::.names_abbreviate(x)
 ```
 
 This can make the column names a little easier to use in an
 interactive session.
 
 ```{r}
-colData_distinct(sce, abbreviate_colnames = TRUE)
+colDataBrief(sce)
 ```
+
+## Working with colData
 
 Some exploration suggests that the column
 `donor_organism.provenance.document_id` defines each biological
@@ -128,7 +132,7 @@ sample, so we see that the experiment consists of 8 individuals with
 between 178 and 505 cells per individual.
 
 ```{r}
-colData_distinct(sce, TRUE) %>%
+colDataBrief(sce) %>%
     count(donor_organism.provenance.document_id)
 ```
 
@@ -136,8 +140,9 @@ There are 6 male and 2 female samples with diverse ethnicity.
 
 ```{r}
 count <-
-    colData_tibble(sce, TRUE) %>%
+    colDataBrief(sce) %>%
     count(donor_organism.provenance.document_id, sex, ethnicity.ontology_label)
+count
 ```
 
 The provenance `document_id` serves as a link to addition information
@@ -148,7 +153,7 @@ function `.files()` tries to parse this into a sensible format.
 
 ```{r donor_files}
 donor <-
-    colData_tibble(sce) %>%
+    colDataTibble(sce) %>%
     distinct(donor_organism.provenance.document_id) %>%
     HCAmtxzip:::.files(donor_organism.provenance.document_id)
 ```
@@ -165,7 +170,7 @@ with the entire data set using `left_join()`
 
 ```
 left_join(count, donor)
-all <- left_join(colData_tibble(sce), donor)
+all <- left_join(colDataTibble(sce), donor)
 ```
 
 Similarly detailed information about other aspects of the experiment,
@@ -175,7 +180,7 @@ elsewhere in `colData(sce)`. For instance, here's the (truncated, in
 the HCA) description of the project.
 
 ```{r project_files}
-project <- colData_tibble(sce) %>%
+project <- colDataTibble(sce) %>%
     distinct(project.provenance.document_id) %>%
     HCAmtxzip:::.files(project.provenance.document_id)
 project
@@ -183,6 +188,8 @@ pull(project, "project_core.project_description") %>%
     strwrap(width = 80) %>%
     cat(sep="\n")
 ```
+
+## Acknowledgements
 
 Here's information about the software in use to produce the above.
 

@@ -36,6 +36,8 @@ BiocManager::install("mtmorgan/HCAmtxzip")
 Load the package and discover project titles for which pre-computed
 mtx.zip archives are available
 
+## Discovery and import
+
 
 ```r
 suppressPackageStartupMessages({ library(HCAmtxzip) })
@@ -126,17 +128,72 @@ mean(assay(sce) == 0)
 ```
 
 Information about each feature can be extracted with `rowData(sce)`,
-and about each cell with `colData(sce)`. Much of the `colData()` is
-constant across all cells, e.g., they all come from the same
-experiment. A helper function `colData_common()` summarizes these
-common features, where we learn for instance that the experiment
+and about each cell with `colData(sce)`; it's often convenient to work
+with this data using the 'tidy' framework, with `rowDataTibbe()` and
+`colDataTibble()` providing relevant access
+
+
+```r
+colDataTibble(sce)
+## # A tibble: 2,544 x 43
+##    genes_detected file_uuid file_version total_umis emptydrops_is_c…
+##             <int> <chr>     <chr>        <lgl>      <lgl>           
+##  1           6924 6770c8ea… 2019-05-15T… NA         NA              
+##  2           3171 68efbcbe… 2019-05-30T… NA         NA              
+##  3           3838 209d615a… 2019-05-14T… NA         NA              
+##  4           4111 143a7005… 2019-05-14T… NA         NA              
+##  5           5834 45e82c84… 2019-05-14T… NA         NA              
+##  6           2564 cb0b32b2… 2019-05-14T… NA         NA              
+##  7           3152 2b5338c5… 2019-05-14T… NA         NA              
+##  8           6375 66515cc6… 2019-05-14T… NA         NA              
+##  9           4650 45e89c83… 2019-05-14T… NA         NA              
+## 10           4420 476dc6ce… 2019-05-14T… NA         NA              
+## # … with 2,534 more rows, and 38 more variables: barcode <lgl>,
+## #   cell_suspension.provenance.document_id <chr>,
+## #   specimen_from_organism.provenance.document_id <chr>,
+## #   derived_organ_ontology <chr>, derived_organ_label <chr>,
+## #   derived_organ_parts_ontology <chr>, derived_organ_parts_label <chr>,
+## #   cell_suspension.genus_species.ontology <chr>,
+## #   cell_suspension.genus_species.ontology_label <chr>,
+## #   donor_organism.provenance.document_id <chr>,
+## #   donor_organism.human_specific.ethnicity.ontology <chr>,
+## #   donor_organism.human_specific.ethnicity.ontology_label <chr>,
+## #   donor_organism.diseases.ontology <chr>,
+## #   donor_organism.diseases.ontology_label <chr>,
+## #   donor_organism.development_stage.ontology <chr>,
+## #   donor_organism.development_stage.ontology_label <chr>,
+## #   donor_organism.sex <chr>, donor_organism.is_living <chr>,
+## #   specimen_from_organism.organ.ontology <chr>,
+## #   specimen_from_organism.organ.ontology_label <chr>,
+## #   specimen_from_organism.organ_parts.ontology <chr>,
+## #   specimen_from_organism.organ_parts.ontology_label <chr>,
+## #   library_preparation_protocol.provenance.document_id <chr>,
+## #   library_preparation_protocol.input_nucleic_acid_molecule.ontology <chr>,
+## #   library_preparation_protocol.input_nucleic_acid_molecule.ontology_label <chr>,
+## #   library_preparation_protocol.library_construction_method.ontology <chr>,
+## #   library_preparation_protocol.library_construction_method.ontology_label <chr>,
+## #   library_preparation_protocol.end_bias <chr>,
+## #   library_preparation_protocol.strand <chr>,
+## #   project.provenance.document_id <chr>,
+## #   project.project_core.project_short_name <chr>,
+## #   project.project_core.project_title <chr>,
+## #   analysis_protocol.provenance.document_id <chr>, dss_bundle_fqid <chr>,
+## #   bundle_uuid <chr>, bundle_version <chr>,
+## #   analysis_protocol.protocol_core.protocol_id <chr>,
+## #   analysis_working_group_approval_status <chr>
+```
+
+Much of the `colData()` is constant across all cells, e.g., they all
+come from the same experiment. Use `colDataConstants()` to access
+these common features, where we learn for instance that the experiment
 involves the pancreas islet of Langerhans.
 
 
 ```r
-colData_common(sce) %>% print(n=Inf)
+colDataConstants(sce) %>%
+    print(n = Inf)
 ## # A tibble: 27 x 2
-##    key                                  value                              
+##    column                               value                              
 ##    <chr>                                <chr>                              
 ##  1 total_umis                           <NA>                               
 ##  2 emptydrops_is_cell                   <NA>                               
@@ -167,52 +224,15 @@ colData_common(sce) %>% print(n=Inf)
 ## 27 analysis_working_group_approval_sta… blessed
 ```
 
-The helper function `colData_distinct()` extracts the columns that
-differ between cells
-
-
-```r
-colData_distinct(sce)
-## # A tibble: 2,544 x 16
-##    genes_detected file_uuid file_version cell_suspension… specimen_from_o…
-##             <int> <chr>     <chr>        <chr>            <chr>           
-##  1           6924 6770c8ea… 2019-05-15T… 00ca0d37-b787-4… 9c1445a1-7287-4…
-##  2           3171 68efbcbe… 2019-05-30T… 0103aed0-29c2-4… 14875995-58ca-4…
-##  3           3838 209d615a… 2019-05-14T… 01a5dd09-db87-4… 56b6cd1e-7c2c-4…
-##  4           4111 143a7005… 2019-05-14T… 020d39f9-9375-4… a1b35ebb-b79e-4…
-##  5           5834 45e82c84… 2019-05-14T… 02583626-682b-4… 1f43dc7a-3f89-4…
-##  6           2564 cb0b32b2… 2019-05-14T… 041637f8-d5c9-4… 14875995-58ca-4…
-##  7           3152 2b5338c5… 2019-05-14T… 044472bd-588a-4… 67601c53-f042-4…
-##  8           6375 66515cc6… 2019-05-14T… 046c1a85-77f7-4… 67601c53-f042-4…
-##  9           4650 45e89c83… 2019-05-14T… 04f60cb7-5ced-4… 1f43dc7a-3f89-4…
-## 10           4420 476dc6ce… 2019-05-14T… 061f92bf-fcfc-4… 56b6cd1e-7c2c-4…
-## # … with 2,534 more rows, and 11 more variables:
-## #   donor_organism.provenance.document_id <chr>,
-## #   donor_organism.human_specific.ethnicity.ontology <chr>,
-## #   donor_organism.human_specific.ethnicity.ontology_label <chr>,
-## #   donor_organism.development_stage.ontology <chr>,
-## #   donor_organism.development_stage.ontology_label <chr>,
-## #   donor_organism.sex <chr>,
-## #   analysis_protocol.provenance.document_id <chr>, dss_bundle_fqid <chr>,
-## #   bundle_uuid <chr>, bundle_version <chr>,
-## #   analysis_protocol.protocol_core.protocol_id <chr>
-```
-
-An additional helper function shortens column names to the shortest
-'word' (defined by the occurence of `_` or `.`) suffix, as illustrated
-with
+The function `colDataBrief()` extracts the columns that differ between
+cells, and shortens column names to the shortest 'word' (defined by
+the occurence of `_` or `.`) suffix, as illustrated with
 
 
 ```r
 x <- setNames(nm = c("common_prefix.a_title", "common_prefix.a_name"))
-names_abbreviate(x)
+HCAmtxzip:::.names_abbreviate(x)
 ## [1] "title" "name"
-names_abbreviate(x, map = TRUE)
-## # A tibble: 2 x 2
-##   name                  abbrev
-##   <chr>                 <chr> 
-## 1 common_prefix.a_title title 
-## 2 common_prefix.a_name  name
 ```
 
 This can make the column names a little easier to use in an
@@ -220,7 +240,7 @@ interactive session.
 
 
 ```r
-colData_distinct(sce, abbreviate_colnames = TRUE)
+colDataBrief(sce)
 ## # A tibble: 2,544 x 16
 ##    detected file_uuid file_version suspension.prov… from_organism.p…
 ##       <int> <chr>     <chr>        <chr>            <chr>           
@@ -242,6 +262,8 @@ colData_distinct(sce, abbreviate_colnames = TRUE)
 ## #   bundle_version <chr>, protocol_id <chr>
 ```
 
+## Working with colData
+
 Some exploration suggests that the column
 `donor_organism.provenance.document_id` defines each biological
 sample, so we see that the experiment consists of 8 individuals with
@@ -249,7 +271,7 @@ between 178 and 505 cells per individual.
 
 
 ```r
-colData_distinct(sce, TRUE) %>%
+colDataBrief(sce) %>%
     count(donor_organism.provenance.document_id)
 ## # A tibble: 8 x 2
 ##   donor_organism.provenance.document_id     n
@@ -269,8 +291,20 @@ There are 6 male and 2 female samples with diverse ethnicity.
 
 ```r
 count <-
-    colData_tibble(sce, TRUE) %>%
+    colDataBrief(sce) %>%
     count(donor_organism.provenance.document_id, sex, ethnicity.ontology_label)
+count
+## # A tibble: 8 x 4
+##   donor_organism.provenance.docu… sex    ethnicity.ontology_label         n
+##   <chr>                           <chr>  <chr>                        <int>
+## 1 42e60811-4a08-45db-8db8-579f71… male   European                       331
+## 2 6f1fd690-f44b-414e-ab7e-ea555b… male   Asian                          286
+## 3 6fff3e7d-416e-4256-b33a-344812… female European                       474
+## 4 a2675857-89d2-41a7-9178-f7c821… male   European                       272
+## 5 d361a5a0-19c0-4d5c-be21-117e93… male   European                       505
+## 6 e89af40b-6ef9-4b6a-8b6a-a51d1d… male   African American or Afro-Ca…   221
+## 7 f5b67f76-92f0-4426-aa6c-888b88… female African American or Afro-Ca…   277
+## 8 fc0c4a2b-af93-42ec-8b68-10f68a… male   ""                             178
 ```
 
 The provenance `document_id` serves as a link to addition information
@@ -282,7 +316,7 @@ function `.files()` tries to parse this into a sensible format.
 
 ```r
 donor <-
-    colData_tibble(sce) %>%
+    colDataTibble(sce) %>%
     distinct(donor_organism.provenance.document_id) %>%
     HCAmtxzip:::.files(donor_organism.provenance.document_id)
 ```
@@ -311,7 +345,7 @@ with the entire data set using `left_join()`
 
 ```
 left_join(count, donor)
-all <- left_join(colData_tibble(sce), donor)
+all <- left_join(colDataTibble(sce), donor)
 ```
 
 Similarly detailed information about other aspects of the experiment,
@@ -322,7 +356,7 @@ the HCA) description of the project.
 
 
 ```r
-project <- colData_tibble(sce) %>%
+project <- colDataTibble(sce) %>%
     distinct(project.provenance.document_id) %>%
     HCAmtxzip:::.files(project.provenance.document_id)
 project
@@ -363,6 +397,8 @@ pull(project, "project_core.project_description") %>%
 ## processes. Examination of single cells from primary human pancreas tissue
 ```
 
+## Acknowledgements
+
 Here's information about the software in use to produce the above.
 
 
@@ -384,7 +420,7 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] HCAmtxzip_0.0.2             dplyr_0.8.3                
+##  [1] HCAmtxzip_0.0.3             dplyr_0.8.3                
 ##  [3] SingleCellExperiment_1.9.0  SummarizedExperiment_1.17.0
 ##  [5] DelayedArray_0.13.0         BiocParallel_1.21.0        
 ##  [7] matrixStats_0.55.0          Biobase_2.47.0             
