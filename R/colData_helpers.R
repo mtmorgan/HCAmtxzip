@@ -18,9 +18,17 @@
 #'
 #' @export
 colData_tibble <-
-    function(sce)
+    function(sce, abbreviate_colnames = FALSE)
 {
-    as_tibble(colData(sce))
+    stopifnot(
+        is(sce, "SummarizedExperiment"),
+        .is_scalar_logical(abbreviate_colnames)
+    )
+
+    tbl <- as_tibble(colData(sce))
+    if (abbreviate_colnames)
+        names(tbl) <- names_abbreviate(tbl)
+    tbl
 }
 
 #' @rdname colData_helpers
