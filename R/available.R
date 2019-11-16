@@ -107,7 +107,7 @@
 #'     to the archive.
 #'
 #' @examples
-#' dd <- discover()
+#' dd <- available()
 #' dd
 #' dd %>% select(projectTitle)
 #' dd %>%
@@ -124,7 +124,7 @@
 #' @importFrom tibble tibble as_tibble
 #'
 #' @export
-discover <-
+available <-
     function()
 {
     projects <- .projects()

@@ -33,15 +33,15 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("mtmorgan/HCAmtxzip")
 ```
 
-Load the package and discover project titles for which pre-computed
-mtx.zip archives are available
+Load the package and find available project titles for which
+pre-computed mtx.zip archives are available
 
 ## Discovery and import
 
 
 ```r
 suppressPackageStartupMessages({ library(HCAmtxzip) })
-dd <- discover()
+dd <- available()
 dd
 ## # A tibble: 13 x 5
 ##    projectTitle             entryId       hits       size path             
@@ -119,7 +119,7 @@ annotations.
 [sce_image]: https://raw.githubusercontent.com/Bioconductor/SummarizedExperiment/master/vignettes/SE.svg?sanitize=true
 
 The object contains a matrix of feature x sample counts, and it's easy
-to discover, e.g., that about 92\% the cells in the matrix are zeros.
+to find, e.g., that about 92\% the cells in the matrix are zeros.
 
 
 ```r
