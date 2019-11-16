@@ -26,7 +26,8 @@
     tibble(projectTitle, entryId, hits)
 }
 
-#' @importFrom dplyr bind_cols bind_rows
+#' @importFrom dplyr bind_cols bind_rows select distinct pull
+#' @importFrom rlang enquo
 #' @importFrom purrr discard keep modify_if
 #' @importFrom jsonlite fromJSON
 .file <-
@@ -46,10 +47,17 @@
 }
 
 .files <-
-    function(uuids, verbose = FALSE)
+    function(.data, field, verbose = FALSE)
 {
+    field <- enquo(field)
+    values <- select(.data, !!field) %>% distinct()
+    uuids <- pull(values, !!field)
     responses <- lapply(uuids, .file, verbose = verbose)
-    do.call(bind_rows, responses)
+    responses <- do.call(bind_rows, responses)
+    responses <- bind_cols(values, responses)
+    suppressMessages({
+        left_join(select(.data, !!field), responses)
+    })
 }
 
 .s3_chr <-
