@@ -420,9 +420,71 @@ pull(project, "project_core.project_description") %>%
 ## processes. Examination of single cells from primary human pancreas tissue
 ```
 
+## Exploratory analysis
+
+To illustrate the first analytic steps enabled by this package, load
+the [scater][] (single-cell normalization) and [ggplot2][]
+(visualization) packages.
+
+[scater]: https://bioconductor.org/packages/scater
+[ggplot2]: https://cran.r-project.org/package=ggplot2
+
+
+```r
+library(scater)
+library(ggplot2)
+```
+
+Normalize our data; the updated `sce` contains an addition assay `logcounts`.
+
+
+
+```r
+sce <- logNormCounts(sce) 
+```
+
+For an overall gestault, focus on the 1000 most variable
+(statistically informative?) genes
+
+
+
+```r
+rv = apply(logcounts(sce), 1, var)
+keep <- tail(order(rv), 1000)
+```
+
+and perform a principle components analysis
+
+
+```r
+pc = prcomp(t(logcounts(sce)[keep,]), scale = TRUE)
+```
+
+Visualize the results using the [ggplot2][] package.
+
+
+```r
+ggplot(as_tibble(pc$x), aes(PC1, PC2)) + geom_point()
+```
+
+<img src="man/figures/README-principle_components-1.png" title="plot of chunk principle_components" alt="plot of chunk principle_components" width="100%" />
+
+It then becomes interesting to identify the factors that separate the
+cells into groups.
+
 ## Acknowledgements
 
-Here's information about the software in use to produce the above.
+A portion of this work is supported by the Chan Zuckerberg Initiative
+DAF, an advised fund of Silicon Valley Community Foundation.
+
+Research reported in this presentation was supported by the NHGRI and
+NCI of the National Institutes of Health under award numbers
+U41HG004059, U24CA180996, and U24CA232979. The content is solely the
+responsibility of the authors and does not necessarily represent the
+official views of the National Institutes of Health.
+
+
+The following is a summary of software used to produce this document.
 
 
 ```r
@@ -443,29 +505,36 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] HCAmtxzip_0.0.3             dplyr_0.8.3                
-##  [3] SingleCellExperiment_1.9.0  SummarizedExperiment_1.17.0
-##  [5] DelayedArray_0.13.0         BiocParallel_1.21.0        
-##  [7] matrixStats_0.55.0          Biobase_2.47.0             
-##  [9] GenomicRanges_1.39.1        GenomeInfoDb_1.23.0        
-## [11] IRanges_2.21.1              S4Vectors_0.25.0           
-## [13] BiocGenerics_0.33.0        
+##  [1] scater_1.15.4               ggplot2_3.2.1              
+##  [3] HCAmtxzip_0.0.3             dplyr_0.8.3                
+##  [5] SingleCellExperiment_1.9.0  SummarizedExperiment_1.17.0
+##  [7] DelayedArray_0.13.0         BiocParallel_1.21.0        
+##  [9] matrixStats_0.55.0          Biobase_2.47.0             
+## [11] GenomicRanges_1.39.1        GenomeInfoDb_1.23.0        
+## [13] IRanges_2.21.1              S4Vectors_0.25.0           
+## [15] BiocGenerics_0.33.0        
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] tidyselect_0.2.5       xfun_0.11              purrr_0.3.3           
-##  [4] lattice_0.20-38        vctrs_0.2.0            BiocFileCache_1.11.2  
-##  [7] utf8_1.1.4             blob_1.2.0             rlang_0.4.1           
-## [10] pillar_1.4.2           glue_1.3.1             DBI_1.0.0             
-## [13] rappdirs_0.3.1         bit64_0.9-7            dbplyr_1.4.2          
-## [16] GenomeInfoDbData_1.2.2 stringr_1.4.0          zlibbioc_1.33.0       
-## [19] evaluate_0.14          memoise_1.1.0          knitr_1.26            
-## [22] curl_4.2               fansi_0.4.0            Rcpp_1.0.3            
-## [25] backports_1.1.5        jsonlite_1.6           XVector_0.27.0        
-## [28] bit_1.1-14             digest_0.6.22          stringi_1.4.3         
-## [31] grid_4.0.0             cli_1.1.0              tools_4.0.0           
-## [34] bitops_1.0-6           magrittr_1.5           RCurl_1.95-4.12       
-## [37] tibble_2.1.3           RSQLite_2.1.2          crayon_1.3.4          
-## [40] pkgconfig_2.0.3        zeallot_0.1.0          Matrix_1.2-17         
-## [43] xml2_1.2.2             assertthat_0.2.1       httr_1.4.1            
-## [46] R6_2.4.1               compiler_4.0.0
+##  [1] rsvd_1.0.2               Rcpp_1.0.3               lattice_0.20-38         
+##  [4] assertthat_0.2.1         zeallot_0.1.0            digest_0.6.22           
+##  [7] utf8_1.1.4               BiocFileCache_1.11.2     R6_2.4.1                
+## [10] backports_1.1.5          RSQLite_2.1.2            evaluate_0.14           
+## [13] httr_1.4.1               pillar_1.4.2             zlibbioc_1.33.0         
+## [16] rlang_0.4.1              lazyeval_0.2.2           curl_4.2                
+## [19] irlba_2.3.3              blob_1.2.0               Matrix_1.2-17           
+## [22] BiocNeighbors_1.5.1      stringr_1.4.0            RCurl_1.95-4.12         
+## [25] bit_1.1-14               munsell_0.5.0            vipor_0.4.5             
+## [28] BiocSingular_1.3.0       compiler_4.0.0           xfun_0.11               
+## [31] pkgconfig_2.0.3          ggbeeswarm_0.6.0         tidyselect_0.2.5        
+## [34] gridExtra_2.3            tibble_2.1.3             GenomeInfoDbData_1.2.2  
+## [37] codetools_0.2-16         viridisLite_0.3.0        fansi_0.4.0             
+## [40] crayon_1.3.4             dbplyr_1.4.2             withr_2.1.2             
+## [43] bitops_1.0-6             rappdirs_0.3.1           grid_4.0.0              
+## [46] jsonlite_1.6             gtable_0.3.0             DBI_1.0.0               
+## [49] magrittr_1.5             scales_1.0.0             cli_1.1.0               
+## [52] stringi_1.4.3            XVector_0.27.0           viridis_0.5.1           
+## [55] xml2_1.2.2               DelayedMatrixStats_1.9.0 vctrs_0.2.0             
+## [58] tools_4.0.0              bit64_0.9-7              beeswarm_0.2.3          
+## [61] glue_1.3.1               purrr_0.3.3              colorspace_1.4-1        
+## [64] memoise_1.1.0            knitr_1.26
 ```

@@ -9,7 +9,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "##",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  cache = TRUE
 )
 ```
 
@@ -189,9 +190,64 @@ pull(project, "project_core.project_description") %>%
     cat(sep="\n")
 ```
 
+## Exploratory analysis
+
+To illustrate the first analytic steps enabled by this package, load
+the [scater][] (single-cell normalization) and [ggplot2][]
+(visualization) packages.
+
+[scater]: https://bioconductor.org/packages/scater
+[ggplot2]: https://cran.r-project.org/package=ggplot2
+
+```{r, message = FALSE}
+library(scater)
+library(ggplot2)
+```
+
+Normalize our data; the updated `sce` contains an addition assay `logcounts`.
+
+
+```{r}
+sce <- logNormCounts(sce) 
+```
+
+For an overall gestault, focus on the 1000 most variable
+(statistically informative?) genes
+
+
+```{r}
+rv = apply(logcounts(sce), 1, var)
+keep <- tail(order(rv), 1000)
+```
+
+and perform a principle components analysis
+
+```{r}
+pc = prcomp(t(logcounts(sce)[keep,]), scale = TRUE)
+```
+
+Visualize the results using the [ggplot2][] package.
+
+```{r principle_components}
+ggplot(as_tibble(pc$x), aes(PC1, PC2)) + geom_point()
+```
+
+It then becomes interesting to identify the factors that separate the
+cells into groups.
+
 ## Acknowledgements
 
-Here's information about the software in use to produce the above.
+A portion of this work is supported by the Chan Zuckerberg Initiative
+DAF, an advised fund of Silicon Valley Community Foundation.
+
+Research reported in this presentation was supported by the NHGRI and
+NCI of the National Institutes of Health under award numbers
+U41HG004059, U24CA180996, and U24CA232979. The content is solely the
+responsibility of the authors and does not necessarily represent the
+official views of the National Institutes of Health.
+
+
+The following is a summary of software used to produce this document.
 
 ```{r sessionInfo}
 sessionInfo()
