@@ -1,7 +1,7 @@
-Package: HCAmtxzip 
+Package: HCAmtxzip
 Title: Represent Human Cell Atlas 'MTX' bundles as SummarizedExperiment
 Version: 0.0.1
-Authors@R: 
+Authors@R:
     person(
         given = "Martin",
         family = "Morgan",
@@ -31,3 +31,5 @@ Imports:
     tibble,
     purrr
 RoxygenNote: 6.1.1
+Suggests:
+    testthat (>= 2.1.0)
