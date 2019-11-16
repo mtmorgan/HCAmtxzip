@@ -5,6 +5,8 @@
 .S3_BUCKET <-
     "https://s3.amazonaws.com/project-assets.data.humancellatlas.org/"
 
+.AZUL_BUCKET <- "https://data.humancellatlas.org/"
+
 .projects <-
     function(max = 1000L)
 {
@@ -87,10 +89,8 @@
         entryId = sub(re, "\\1", file),
         fileFormat = sub(re, "\\2", file),
         size,
-        file = file,
-        path = paste0(.S3_BUCKET, key)
-    ) %>%
-        filter(grepl("^[^.]+\\.(mtx.zip|loom)$", file))
+        path = paste0(.AZUL_BUCKET, key),
+    )
 }
 
 #' Discover projects with pre-computed HCA files
@@ -122,5 +122,6 @@ discover <-
     projects <- .projects()
     buckets <- .buckets()
     suppressMessages(left_join(projects, buckets)) %>%
-        filter(grepl("mtx.zip", fileFormat))
+        filter(fileFormat %in% "mtx.zip") %>%
+        select(-fileFormat)
 }
