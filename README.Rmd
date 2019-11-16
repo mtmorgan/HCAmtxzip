@@ -44,7 +44,7 @@ mtx.zip archives are available
 
 ```{r discover}
 suppressPackageStartupMessages({ library(HCAmtxzip) })
-dd = discover()
+dd <- discover()
 dd
 ```
 
@@ -135,7 +135,8 @@ colData_distinct(sce, TRUE) %>%
 There are 6 male and 2 female samples with diverse ethnicity.
 
 ```{r}
-colData_distinct(sce, TRUE) %>%
+count <-
+    colData_tibble(sce, TRUE) %>%
     count(donor_organism.provenance.document_id, sex, ethnicity.ontology_label)
 ```
 
@@ -146,11 +147,10 @@ relatively difficult to deal with in _R_; the even-less-mature
 function `.files()` tries to parse this into a sensible format.
 
 ```{r donor_files}
-uuids <- colData_distinct(sce, TRUE) %>%
-    count(donor_organism.provenance.document_id) %>%
-    pull(donor_organism.provenance.document_id)
-donor <- HCAmtxzip:::.files(uuids)
-donor
+donor <-
+    colData_tibble(sce) %>%
+    distinct(donor_organism.provenance.document_id) %>%
+    .files(donor_organism.provenance.document_id)
 ```
 
 We thus learn the sex, age and cause of death of each individual
@@ -160,6 +160,14 @@ donor %>%
     select(provenance.document_id, sex, organism_age, death.cause_of_death)
 ```
 
+The information on donor could be joined with the count summary, or
+with the entire data set using `left_join()`
+
+```
+left_join(count, donor)
+all <- left_join(colData_tibble(sce), donor)
+```
+
 Similarly detailed information about other aspects of the experiment,
 such as contributors, funding, and publications, can be learned by
 querying `.files()` with additional document identifiers from
@@ -167,10 +175,9 @@ elsewhere in `colData(sce)`. For instance, here's the (truncated, in
 the HCA) description of the project.
 
 ```{r project_files}
-uuid <- colData_common(sce) %>% 
-    filter(key %in% "project.provenance.document_id") %>% 
-    pull(value)
-project <- HCAmtxzip:::.files(uuid)
+project <- colData_tibble(sce) %>%
+    distinct(project.provenance.document_id) %>%
+    .files(project.provenance.document_id)
 project
 pull(project, "project_core.project_description") %>%
     strwrap(width = 80) %>%

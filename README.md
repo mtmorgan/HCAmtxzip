@@ -39,7 +39,7 @@ mtx.zip archives are available
 
 ```r
 suppressPackageStartupMessages({ library(HCAmtxzip) })
-dd = discover()
+dd <- discover()
 dd
 ## # A tibble: 13 x 7
 ##    projectTitle      entryId    hits   fileFormat   size file    path      
@@ -268,19 +268,10 @@ There are 6 male and 2 female samples with diverse ethnicity.
 
 
 ```r
-colData_distinct(sce, TRUE) %>%
+count <-
+    colData_tibble(sce, TRUE) %>%
     count(donor_organism.provenance.document_id, sex, ethnicity.ontology_label)
-## # A tibble: 8 x 4
-##   donor_organism.provenance.docu… sex    ethnicity.ontology_label         n
-##   <chr>                           <chr>  <chr>                        <int>
-## 1 42e60811-4a08-45db-8db8-579f71… male   European                       331
-## 2 6f1fd690-f44b-414e-ab7e-ea555b… male   Asian                          286
-## 3 6fff3e7d-416e-4256-b33a-344812… female European                       474
-## 4 a2675857-89d2-41a7-9178-f7c821… male   European                       272
-## 5 d361a5a0-19c0-4d5c-be21-117e93… male   European                       505
-## 6 e89af40b-6ef9-4b6a-8b6a-a51d1d… male   African American or Afro-Ca…   221
-## 7 f5b67f76-92f0-4426-aa6c-888b88… female African American or Afro-Ca…   277
-## 8 fc0c4a2b-af93-42ec-8b68-10f68a… male   ""                             178
+## Error in colData_tibble(sce, TRUE): unused argument (TRUE)
 ```
 
 The provenance `document_id` serves as a link to addition information
@@ -291,33 +282,11 @@ function `.files()` tries to parse this into a sensible format.
 
 
 ```r
-uuids <- colData_distinct(sce, TRUE) %>%
-    count(donor_organism.provenance.document_id) %>%
-    pull(donor_organism.provenance.document_id)
-donor <- HCAmtxzip:::.files(uuids)
-donor
-## # A tibble: 8 x 21
-##   describedBy schema_type biomaterial_cor… biomaterial_cor… is_living sex  
-##   <chr>       <chr>       <chr>            <chr>            <chr>     <chr>
-## 1 https://sc… biomaterial DID_scRSq02      9606             no        male 
-## 2 https://sc… biomaterial DID_scRSq05      9606             no        male 
-## 3 https://sc… biomaterial DID_scRSq06      9606             no        fema…
-## 4 https://sc… biomaterial DID_scRSq08      9606             no        male 
-## 5 https://sc… biomaterial DID_scRSq04      9606             no        male 
-## 6 https://sc… biomaterial DID_scRSq01      9606             no        male 
-## 7 https://sc… biomaterial DID_scRSq07      9606             no        fema…
-## 8 https://sc… biomaterial DID_scRSq03      9606             no        male 
-## # … with 15 more variables: organism_age <chr>,
-## #   organism_age_unit.text <chr>, organism_age_unit.ontology <chr>,
-## #   organism_age_unit.ontology_label <chr>,
-## #   human_specific.body_mass_index <chr>,
-## #   human_specific.ethnicity.text <chr>,
-## #   human_specific.ethnicity.ontology <chr>,
-## #   human_specific.ethnicity.ontology_label <chr>,
-## #   death.cause_of_death <chr>, development_stage.text <chr>,
-## #   development_stage.ontology_label <chr>,
-## #   development_stage.ontology <chr>, provenance.document_id <chr>,
-## #   provenance.submission_date <chr>, provenance.update_date <chr>
+donor <-
+    colData_tibble(sce) %>%
+    distinct(donor_organism.provenance.document_id) %>%
+    .files(donor_organism.provenance.document_id)
+## Error in .files(., donor_organism.provenance.document_id): could not find function ".files"
 ```
 
 We thus learn the sex, age and cause of death of each individual
@@ -326,17 +295,15 @@ We thus learn the sex, age and cause of death of each individual
 ```r
 donor %>%
     select(provenance.document_id, sex, organism_age, death.cause_of_death)
-## # A tibble: 8 x 4
-##   provenance.document_id            sex    organism_age death.cause_of_dea…
-##   <chr>                             <chr>  <chr>        <chr>              
-## 1 42e60811-4a08-45db-8db8-579f718f… male   5            auto accident      
-## 2 6f1fd690-f44b-414e-ab7e-ea555b84… male   22           head trauma        
-## 3 6fff3e7d-416e-4256-b33a-3448127e… female 38           stroke             
-## 4 a2675857-89d2-41a7-9178-f7c821cb… male   54           anoxia             
-## 5 d361a5a0-19c0-4d5c-be21-117e9392… male   21           anoxia             
-## 6 e89af40b-6ef9-4b6a-8b6a-a51d1d72… male   1            anoxia             
-## 7 f5b67f76-92f0-4426-aa6c-888b8865… female 44           stroke             
-## 8 fc0c4a2b-af93-42ec-8b68-10f68a1f… male   6            head trauma
+## Error in eval(lhs, parent, parent): object 'donor' not found
+```
+
+The information on donor could be joined with the count summary, or
+with the entire data set using `left_join()`
+
+```
+left_join(count, donor)
+all <- left_join(colData_tibble(sce), donor)
 ```
 
 Similarly detailed information about other aspects of the experiment,
@@ -347,45 +314,16 @@ the HCA) description of the project.
 
 
 ```r
-uuid <- colData_common(sce) %>% 
-    filter(key %in% "project.provenance.document_id") %>% 
-    pull(value)
-project <- HCAmtxzip:::.files(uuid)
+project <- colData_tibble(sce) %>%
+    distinct(project.provenance.document_id) %>%
+    .files(project.provenance.document_id)
+## Error in .files(., project.provenance.document_id): could not find function ".files"
 project
-## # A tibble: 1 x 11
-##   describedBy schema_type project_core.pr… project_core.pr…
-##   <chr>       <chr>       <chr>            <chr>           
-## 1 https://sc… project     Single cell tra… Single cell tra…
-## # … with 7 more variables: project_core.project_description <chr>,
-## #   supplementary_links <chr>, insdc_project_accessions <chr>,
-## #   geo_series_accessions <chr>, provenance.document_id <chr>,
-## #   provenance.submission_date <chr>, provenance.update_date <chr>
+## Error in eval(expr, envir, enclos): object 'project' not found
 pull(project, "project_core.project_description") %>%
     strwrap(width = 80) %>%
     cat(sep="\n")
-## As organisms age, cells accumulate genetic and epigenetic changes that
-## eventually lead to impaired organ function or catastrophic failure such as
-## cancer. Here we describe a single-cell transcriptome analysis of 2544 human
-## pancreas cells from donors, spanning six decades of life. We find that islet
-## cells from older donors have increased levels of disorder as measured both by
-## noise in the transcriptome and by the number of cells which display
-## inappropriate hormone expression, revealing a transcriptional instability
-## associated with aging. By analyzing the spectrum of somatic mutations in single
-## cells from previously-healthy donors, we find a specific age-dependent
-## mutational signature characterized by C to A and C to G transversions,
-## indicators of oxidative stress, which is absent in single cells from human
-## brain tissue or in a tumor cell line. Cells carrying a high load of such
-## mutations also express higher levels of stress and senescence markers,
-## including FOS, JUN, and the cytoplasmic superoxide dismutase SOD1, markers
-## previously linked to pancreatic diseases with substantial age-dependent risk,
-## such as type 2 diabetes mellitus and adenocarcinoma. Thus, our single-cell
-## approach unveils gene expression changes and somatic mutations acquired in
-## aging human tissue, and identifies molecular pathways induced by these genetic
-## changes that could influence human disease. Also, our results demonstrate the
-## feasibility of using single-cell RNA-seq data from primary cells to derive
-## meaningful insights into the genetic processes that operate on aging human
-## tissue and to determine which molecular mechanisms are coordinated with these
-## processes. Examination of single cells from primary human pancreas tissue
+## Error in pull(project, "project_core.project_description"): object 'project' not found
 ```
 
 Here's information about the software in use to produce the above.
