@@ -23,7 +23,7 @@ summary page][hca_projects].
 
 ## Installation
 
-To install this package and it's dependencies, use BiocManager
+To install this package and its dependencies, use BiocManager
 
 
 ```r
@@ -33,10 +33,10 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("mtmorgan/HCAmtxzip")
 ```
 
+## Discovery and import
+
 Load the package and find available project titles for which
 pre-computed mtx.zip archives are available
-
-## Discovery and import
 
 
 ```r
@@ -71,11 +71,11 @@ path <- dd %>%
 ```
 
 Download, unzip, and import the archive into _R_; the download is
-cached (using [BiocFileCache][]) so only necessary once. The imported
-data is represented as a [SingleCellExperiment][], a data structure at
-the heart of _Bioconductor_ packages [orchestrating single cell
-analysis][osca]. The `dim` output shows that there are 58347 features
-assayed across 2544 cells.
+cached (using [BiocFileCache][]) so the download is only necessary
+once. The imported data is represented as a [SingleCellExperiment][],
+a data structure at the heart of _Bioconductor_ packages
+[orchestrating single cell analysis][osca]. The `dim` output shows
+that there are 58347 features assayed across 2544 cells.
 
 [BiocFileCache]: https://bioconductor.org/packages/BiocFileCache
 [SingleCellExperiment]: https://bioconductor.org/packages/SingleCellExperiment
@@ -118,7 +118,7 @@ annotations.
 
 [sce_image]: https://raw.githubusercontent.com/Bioconductor/SummarizedExperiment/master/vignettes/SE.svg?sanitize=true
 
-The object contains a matrix of feature x sample counts, and it's easy
+The object contains a matrix of feature x sample counts, and it is easy
 to find, e.g., that about 92\% the cells in the matrix are zeros.
 
 
@@ -128,8 +128,8 @@ mean(assay(sce) == 0)
 ```
 
 Information about each feature can be extracted with `rowData(sce)`,
-and about each cell with `colData(sce)`; it's often convenient to work
-with this data using the 'tidy' framework, with `rowDataTibbe()` and
+and about each cell with `colData(sce)`; it is often convenient to work
+with this data using the 'tidy' framework, with `rowDataTibble()` and
 `colDataTibble()` providing relevant access
 
 
@@ -183,10 +183,11 @@ colDataTibble(sce)
 ## #   analysis_working_group_approval_status <chr>
 ```
 
-Much of the `colData()` is constant across all cells, e.g., they all
-come from the same experiment. Use `colDataConstants()` to access
-these common features, where we learn for instance that the experiment
-involves the pancreas islet of Langerhans.
+Much of the `colData()` is constant across all cells, e.g., all cells
+come from the same experiment, so share the same
+`project.project_core.project_title`. Use `colDataConstants()` to
+access these common features, where we learn for instance that the
+experiment involves the pancreas islet of Langerhans.
 
 
 ```r
@@ -375,7 +376,7 @@ all <- left_join(colDataTibble(sce), donor)
 Similarly detailed information about other aspects of the experiment,
 such as contributors, funding, and publications, can be learned by
 querying `.files()` with additional document identifiers from
-elsewhere in `colData(sce)`. For instance, here's the (truncated, in
+elsewhere in `colData(sce)`. For instance, here is the (truncated, in
 the HCA) description of the project.
 
 
@@ -443,7 +444,7 @@ Normalize our data; the updated `sce` contains an addition assay `logcounts`.
 sce <- logNormCounts(sce) 
 ```
 
-For an overall gestault, focus on the 1000 most variable
+For an overall gestalt, focus on the 1000 most variable
 (statistically informative?) genes
 
 
@@ -460,14 +461,16 @@ and perform a principle components analysis
 pc = prcomp(t(logcounts(sce)[keep,]), scale = TRUE)
 ```
 
-Visualize the results using the [ggplot2][] package.
+Visualize the results using the [ggplot2][] package, where each point
+represents the log-normalized expression of a cell, reduced to
+two-dimensional space.
 
 
 ```r
 ggplot(as_tibble(pc$x), aes(PC1, PC2)) + geom_point()
 ```
 
-<img src="man/figures/README-principle_components-1.png" title="plot of chunk principle_components" alt="plot of chunk principle_components" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" title="plot of chunk unnamed-chunk-14" alt="plot of chunk unnamed-chunk-14" width="100%" />
 
 It then becomes interesting to identify the factors that separate the
 cells into groups.
@@ -506,7 +509,7 @@ sessionInfo()
 ## 
 ## other attached packages:
 ##  [1] scater_1.15.4               ggplot2_3.2.1              
-##  [3] HCAmtxzip_0.0.3             dplyr_0.8.3                
+##  [3] HCAmtxzip_0.0.4             dplyr_0.8.3                
 ##  [5] SingleCellExperiment_1.9.0  SummarizedExperiment_1.17.0
 ##  [7] DelayedArray_0.13.0         BiocParallel_1.21.0        
 ##  [9] matrixStats_0.55.0          Biobase_2.47.0             
@@ -515,20 +518,27 @@ sessionInfo()
 ## [15] BiocGenerics_0.33.0        
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] tidyselect_0.2.5       xfun_0.11              purrr_0.3.3           
-##  [4] lattice_0.20-38        vctrs_0.2.0            BiocFileCache_1.11.2  
-##  [7] utf8_1.1.4             blob_1.2.0             rlang_0.4.1           
-## [10] pillar_1.4.2           glue_1.3.1             DBI_1.0.0             
-## [13] rappdirs_0.3.1         bit64_0.9-7            dbplyr_1.4.2          
-## [16] GenomeInfoDbData_1.2.2 stringr_1.4.0          zlibbioc_1.33.0       
-## [19] evaluate_0.14          memoise_1.1.0          knitr_1.26            
-## [22] curl_4.2               fansi_0.4.0            Rcpp_1.0.3            
-## [25] backports_1.1.5        jsonlite_1.6           XVector_0.27.0        
-## [28] bit_1.1-14             digest_0.6.22          stringi_1.4.3         
-## [31] grid_4.0.0             cli_1.1.0              tools_4.0.0           
-## [34] bitops_1.0-6           magrittr_1.5           RCurl_1.95-4.12       
-## [37] tibble_2.1.3           RSQLite_2.1.2          crayon_1.3.4          
-## [40] pkgconfig_2.0.3        zeallot_0.1.0          Matrix_1.2-17         
-## [43] xml2_1.2.2             assertthat_0.2.1       httr_1.4.1            
-## [46] R6_2.4.1               compiler_4.0.0
+##  [1] viridis_0.5.1            httr_1.4.1               BiocSingular_1.3.0      
+##  [4] bit64_0.9-7              jsonlite_1.6             viridisLite_0.3.0       
+##  [7] DelayedMatrixStats_1.9.0 assertthat_0.2.1         highr_0.8               
+## [10] BiocFileCache_1.11.2     blob_1.2.0               GenomeInfoDbData_1.2.2  
+## [13] vipor_0.4.5              pillar_1.4.2             RSQLite_2.1.2           
+## [16] backports_1.1.5          lattice_0.20-38          glue_1.3.1              
+## [19] digest_0.6.22            XVector_0.27.0           colorspace_1.4-1        
+## [22] Matrix_1.2-17            pkgconfig_2.0.3          zlibbioc_1.33.0         
+## [25] purrr_0.3.3              scales_1.0.0             tibble_2.1.3            
+## [28] withr_2.1.2              lazyeval_0.2.2           cli_1.1.0               
+## [31] magrittr_1.5             crayon_1.3.4             memoise_1.1.0           
+## [34] evaluate_0.14            fansi_0.4.0              xml2_1.2.2              
+## [37] beeswarm_0.2.3           tools_4.0.0              stringr_1.4.0           
+## [40] munsell_0.5.0            irlba_2.3.3              compiler_4.0.0          
+## [43] rsvd_1.0.2               rlang_0.4.1              grid_4.0.0              
+## [46] RCurl_1.95-4.12          BiocNeighbors_1.5.1      rappdirs_0.3.1          
+## [49] bitops_1.0-6             labeling_0.3             gtable_0.3.0            
+## [52] codetools_0.2-16         DBI_1.0.0                curl_4.2                
+## [55] R6_2.4.1                 gridExtra_2.3            knitr_1.26              
+## [58] bit_1.1-14               utf8_1.1.4               zeallot_0.1.0           
+## [61] stringi_1.4.3            ggbeeswarm_0.6.0         Rcpp_1.0.3              
+## [64] vctrs_0.2.0              dbplyr_1.4.2             tidyselect_0.2.5        
+## [67] xfun_0.11
 ```

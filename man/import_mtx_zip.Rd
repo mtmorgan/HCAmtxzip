@@ -4,8 +4,13 @@
 \alias{import.mtxzip}
 \title{Import Human Cell Atlas '.mtx.zip' archives to SingleCellExperiment}
 \usage{
-import.mtxzip(path, ..., exdir = tempfile(), overwrite = FALSE,
-  verbose = FALSE)
+import.mtxzip(
+  path,
+  ...,
+  exdir = tempfile(),
+  overwrite = FALSE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{path}{character(1) path to remote (`http://` or `https://`)

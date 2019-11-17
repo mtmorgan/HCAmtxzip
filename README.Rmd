@@ -31,7 +31,7 @@ summary page][hca_projects].
 
 ## Installation
 
-To install this package and it's dependencies, use BiocManager
+To install this package and its dependencies, use BiocManager
 
 ```{r install, eval = FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -40,10 +40,10 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("mtmorgan/HCAmtxzip")
 ```
 
+## Discovery and import
+
 Load the package and find available project titles for which
 pre-computed mtx.zip archives are available
-
-## Discovery and import
 
 ```{r available}
 suppressPackageStartupMessages({ library(HCAmtxzip) })
@@ -60,11 +60,11 @@ path <- dd %>%
 ```
 
 Download, unzip, and import the archive into _R_; the download is
-cached (using [BiocFileCache][]) so only necessary once. The imported
-data is represented as a [SingleCellExperiment][], a data structure at
-the heart of _Bioconductor_ packages [orchestrating single cell
-analysis][osca]. The `dim` output shows that there are 58347 features
-assayed across 2544 cells.
+cached (using [BiocFileCache][]) so the download is only necessary
+once. The imported data is represented as a [SingleCellExperiment][],
+a data structure at the heart of _Bioconductor_ packages
+[orchestrating single cell analysis][osca]. The `dim` output shows
+that there are 58347 features assayed across 2544 cells.
 
 [BiocFileCache]: https://bioconductor.org/packages/BiocFileCache
 [SingleCellExperiment]: https://bioconductor.org/packages/SingleCellExperiment
@@ -83,7 +83,7 @@ annotations.
 
 [sce_image]: https://raw.githubusercontent.com/Bioconductor/SummarizedExperiment/master/vignettes/SE.svg?sanitize=true
 
-The object contains a matrix of feature x sample counts, and it's easy
+The object contains a matrix of feature x sample counts, and it is easy
 to find, e.g., that about 92\% the cells in the matrix are zeros.
 
 ```{r}
@@ -91,18 +91,19 @@ mean(assay(sce) == 0)
 ```
 
 Information about each feature can be extracted with `rowData(sce)`,
-and about each cell with `colData(sce)`; it's often convenient to work
-with this data using the 'tidy' framework, with `rowDataTibbe()` and
+and about each cell with `colData(sce)`; it is often convenient to work
+with this data using the 'tidy' framework, with `rowDataTibble()` and
 `colDataTibble()` providing relevant access
 
 ```{r}
 colDataTibble(sce)
 ```
 
-Much of the `colData()` is constant across all cells, e.g., they all
-come from the same experiment. Use `colDataConstants()` to access
-these common features, where we learn for instance that the experiment
-involves the pancreas islet of Langerhans.
+Much of the `colData()` is constant across all cells, e.g., all cells
+come from the same experiment, so share the same
+`project.project_core.project_title`. Use `colDataConstants()` to
+access these common features, where we learn for instance that the
+experiment involves the pancreas islet of Langerhans.
 
 ```{r}
 colDataConstants(sce) %>%
@@ -177,7 +178,7 @@ all <- left_join(colDataTibble(sce), donor)
 Similarly detailed information about other aspects of the experiment,
 such as contributors, funding, and publications, can be learned by
 querying `.files()` with additional document identifiers from
-elsewhere in `colData(sce)`. For instance, here's the (truncated, in
+elsewhere in `colData(sce)`. For instance, here is the (truncated, in
 the HCA) description of the project.
 
 ```{r project_files}
@@ -211,24 +212,26 @@ Normalize our data; the updated `sce` contains an addition assay `logcounts`.
 sce <- logNormCounts(sce) 
 ```
 
-For an overall gestault, focus on the 1000 most variable
+For an overall gestalt, focus on the 1000 most variable
 (statistically informative?) genes
 
 
-```{r}
+```{r rowvar}
 rv = apply(logcounts(sce), 1, var)
 keep <- tail(order(rv), 1000)
 ```
 
 and perform a principle components analysis
 
-```{r}
+```{r prcomp}
 pc = prcomp(t(logcounts(sce)[keep,]), scale = TRUE)
 ```
 
-Visualize the results using the [ggplot2][] package.
+Visualize the results using the [ggplot2][] package, where each point
+represents the log-normalized expression of a cell, reduced to
+two-dimensional space.
 
-```{r principle_components}
+```{r}
 ggplot(as_tibble(pc$x), aes(PC1, PC2)) + geom_point()
 ```
 
