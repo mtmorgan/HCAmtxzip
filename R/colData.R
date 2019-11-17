@@ -4,6 +4,7 @@
     vapply(x, function(column) length(unique(column)), integer(1))
 }
 
+#' @importFrom utils head tail
 .names_abbreviate <-
     function(x, map = FALSE)
 {
@@ -70,7 +71,7 @@ rowDataTibble <-
 {
     stopifnot(is(sce, "SummarizedExperiment"))
 
-    as_tibble(rowData(scde))
+    as_tibble(rowData(sce))
 }
 
 #' @rdname colData
@@ -85,8 +86,7 @@ rowDataTibble <-
 #'
 #' @importFrom methods is
 #' @importFrom stats setNames
-#' @importFrom utils head
-#' @importFrom SingleCellExperiment colData
+#' @importFrom SingleCellExperiment rowData colData
 #'
 #' @export
 colDataConstants <-
