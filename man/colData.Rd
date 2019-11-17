@@ -2,11 +2,14 @@
 % Please edit documentation in R/colData.R
 \name{colDataTibble}
 \alias{colDataTibble}
+\alias{rowDataTibble}
 \alias{colDataConstants}
 \alias{colDataBrief}
 \title{Helper functions for simplifying colData}
 \usage{
 colDataTibble(sce)
+
+rowDataTibble(sce)
 
 colDataConstants(sce)
 
@@ -19,6 +22,9 @@ colDataBrief(sce)
 \value{
 `colDataTibble()` returns a tibble representation of
     `colData()`.
+
+`rowDataTibble() returns a tibble representation of
+    `rowData()`.
 
 `colDataConstants()` returns a two-column tibble. The first
     column, `key` corresponds to `colData()` column names for which

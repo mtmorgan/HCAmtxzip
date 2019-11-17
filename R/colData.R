@@ -61,6 +61,20 @@ colDataTibble <-
 
 #' @rdname colData
 #'
+#' @return `rowDataTibble() returns a tibble representation of
+#'     `rowData()`.
+#'
+#' @export
+rowDataTibble <-
+    function(sce)
+{
+    stopifnot(is(sce, "SummarizedExperiment"))
+
+    as_tibble(rowData(scde))
+}
+
+#' @rdname colData
+#'
 #' @description `colDataConstants()` scans `colData()` columns to
 #'     identify those with a single distinct value.
 #'
