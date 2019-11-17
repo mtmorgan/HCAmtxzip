@@ -33,6 +33,19 @@
     )
 }
 
+#' @importFrom Matrix sparseMatrix
+.read_mtx <-
+    function(path, verbose = FALSE)
+{
+    headers <- readLines(path, 2L)
+    dims <- as.integer(strsplit(headers[2], " ")[[1]][1:2])
+    v <- scan(
+        path, list(integer(), integer(), numeric()), skip = 2,
+        quiet = !verbose
+    )
+    sparseMatrix(v[[1]], v[[2]], x = v[[3]], dims = dims)
+}
+
 #' Import Human Cell Atlas '.mtx.zip' archives to SingleCellExperiment
 #'
 #' @rdname import_mtx_zip
@@ -53,7 +66,6 @@
 #'     represented in a sparse matrix.
 #'
 #' @importFrom utils read.delim unzip
-#' @importFrom Matrix readMM
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom SingleCellExperiment SingleCellExperiment
 #'
@@ -114,7 +126,7 @@ import.mtxzip <-
 
     ## assays
     !verbose || .message("assays")
-    counts <- readMM(ar[["matrix"]])
+    counts <- .read_mtx(ar[["matrix"]], verbose)
 
     ## return value
     !verbose || .message("SingleCellExperiment")
