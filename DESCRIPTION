@@ -1,6 +1,6 @@
 Package: HCAmtxzip
 Title: Represent Human Cell Atlas 'MTX' bundles as SingleCellExperiment
-Version: 0.0.3
+Version: 0.0.4
 Authors@R:
     person(
         given = "Martin",
@@ -31,6 +31,6 @@ Imports:
     tibble,
     purrr,
     rlang
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.0
 Suggests:
     testthat (>= 2.1.0)
