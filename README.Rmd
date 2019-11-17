@@ -231,7 +231,7 @@ Visualize the results using the [ggplot2][] package, where each point
 represents the log-normalized expression of a cell, reduced to
 two-dimensional space.
 
-```{r}
+```{r prcomp_plot}
 ggplot(as_tibble(pc$x), aes(PC1, PC2)) + geom_point()
 ```
 

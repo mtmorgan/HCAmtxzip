@@ -470,7 +470,7 @@ two-dimensional space.
 ggplot(as_tibble(pc$x), aes(PC1, PC2)) + geom_point()
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" title="plot of chunk unnamed-chunk-14" alt="plot of chunk unnamed-chunk-14" width="100%" />
+<img src="man/figures/README-prcomp_plot-1.png" title="plot of chunk prcomp_plot" alt="plot of chunk prcomp_plot" width="100%" />
 
 It then becomes interesting to identify the factors that separate the
 cells into groups.
