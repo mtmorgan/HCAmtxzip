@@ -5,31 +5,34 @@
 }
 
 .names_abbreviate <-
-    function(x, sep = "[_\\.]", map = FALSE)
+    function(x, map = FALSE)
 {
     stopifnot(
         !is.null(names(x)),
-        .is_scalar_character(sep),
         .is_scalar_logical(map)
     )
 
     nms <- names(x)
-    elts <- strsplit(nms, sep)
+    ## allow for trailing punctation -- only split if the next
+    ## charcter is not from punct other than at end of line
+    elts <- strsplit(nms, "[[:punct:]]+(?=[^[:punct:]])", perl = TRUE)
+    seps <- regmatches(nms, gregexpr("[[:punct:]]+(?=[^$])", nms, perl=TRUE))
 
     repeat {
         lens <- lengths(elts)
         if (all(lens == 1L))
             break
-        abbrev <- mapply(`[[`, elts, lens)
-        tbl <- table(abbrev)
-        unique <- abbrev %in% names(tbl)[tbl == 1L]
-        elts[unique] <- as.list(abbrev[unique])
-        elts[!unique] <- Map(function(x, len) {
-            c(head(x, -2), paste(x[[len - 1L]], x[[len]], sep="."))
-        }, elts[!unique], lens[!unique])
+        abbrev <- lapply(elts, tail, 1)
+        tbl <- table(unlist(abbrev))
+        unique <- unlist(abbrev) %in% names(tbl)[tbl == 1L]
+        elts[unique] <- abbrev[unique]
+        elts[!unique] <- Map(function(elt, sep) {
+            c(head(elt, -2), paste0(tail(elt, 2), collapse=sep))
+        }, elts[!unique], lapply(seps[!unique], tail, 1))
+        seps <- lapply(seps, head, -1L)
     }
 
-    elts <- substring(nms, nchar(nms) - nchar(unlist(elts)) + 1L)
+    elts <- as.character(unlist(elts)) # as.character for length(x) == 0
     if (map) {
         tibble(name = nms, abbrev = elts)
     } else elts
@@ -92,8 +95,8 @@ colDataConstants <-
 #'
 #' @return `colDataBrief()` returns a tibble containing only those
 #'     `colData()` columns with more than one value, and with column
-#'     names abbreviated to the shortests common 'word' (using `_` or
-#'     `.` as separators) suffixes.
+#'     names abbreviated to the shortests common 'word' (using
+#'     `[[:punct:]]+` as separators) suffixes.
 #'
 #' @export
 colDataBrief <-

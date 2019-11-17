@@ -27,8 +27,8 @@ colDataBrief(sce)
 
 `colDataBrief()` returns a tibble containing only those
     `colData()` columns with more than one value, and with column
-    names abbreviated to the shortests common 'word' (using `_` or
-    `.` as separators) suffixes.
+    names abbreviated to the shortests common 'word' (using
+    `[[:punct:]]+` as separators) suffixes.
 }
 \description{
 `colDataTibble()` creates a tibble from `colData()`
