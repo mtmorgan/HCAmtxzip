@@ -34,7 +34,7 @@
     function(uuid, verbose = FALSE)
 {
     !verbose || .message(uuid)
-    query <- paste0(.DSS_URL, "/files/", uuid, "?replica=aws")
+    query <- paste0(.DSS_URL, "/files/", uuid, "?replica=", replica())
     path <- bfcrpath(BiocFileCache(), query)
     content <- fromJSON(path)
 
