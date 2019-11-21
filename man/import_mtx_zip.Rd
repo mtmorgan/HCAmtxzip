@@ -5,6 +5,7 @@
 \title{Import Human Cell Atlas '.mtx.zip' archives to SingleCellExperiment}
 \usage{
 import.mtxzip(
+  .data,
   path,
   ...,
   exdir = tempfile(),
@@ -13,8 +14,17 @@ import.mtxzip(
 )
 }
 \arguments{
-\item{path}{character(1) path to remote (`http://` or `https://`)
-or local `.zip` archive.}
+\item{.data}{(optional) When present, a data.frame or derived
+    class, e.g., tibble, containing a single row, and a column
+    specified by the `path` argument and containing a path to a
+    remote (`http://` or `https://`) or local `.zip` archive.
+
+    `.data` can also be a `character(1)` argument used to provide
+    the path to the `.zip` archive directly.}
+
+\item{path}{character(1) the path to the remote (`http://` or
+`https://`) or local `.zip` archive or, when `.data` is
+present, the column name in which the path is found.}
 
 \item{...}{additional arguments, not supported.}
 
@@ -34,12 +44,9 @@ Import Human Cell Atlas '.mtx.zip' archives to SingleCellExperiment
 }
 \examples{
 \dontrun{
-url <- paste0(
-    "https://s3.amazonaws.com/project-assets.data.humancellatlas.org/",
-    "project-assets/project-matrices/",
-    "116965f3-f094-4769-9d28-ae675c1b569c.homo_sapiens.mtx.zip"
-)
-sce <- import.mtxzip(url)
-sce
+aa <- available()
+sce <-
+    filter(aa, size == min(size)) %>%
+    import.mtxzip()
 }
 }

@@ -51,7 +51,7 @@ dd
 ##  3 Assessing the relevance o… 005d611a-14d5… <named… 3.23e8 https://data.humanc…
 ##  4 Census of Immune Cells     cc95ff89-2e68… <named… 2.39e9 https://data.humanc…
 ##  5 Dissecting the human live… 4d6f6c96-2a83… <named… 1.67e8 https://data.humanc…
-##  6 Ischaemic sensitivity of … c4077b3c-5c98… <named… 1.82e8 https://data.humanc…
+##  6 Ischaemic sensitivity of … c4077b3c-5c98… <named… 2.29e9 https://data.humanc…
 ##  7 Profiling of CD34+ cells … 091cf39b-01bc… <named… 2.54e8 https://data.humanc…
 ##  8 Reconstructing the human … f83165c5-e2ea… <named… 1.32e9 https://data.humanc…
 ##  9 Single cell profiling of … 116965f3-f094… <named… 6.49e7 https://data.humanc…
@@ -61,13 +61,16 @@ dd
 ## 13 Structural Remodeling of … f8aa201c-4ff1… <named… 1.41e8 https://data.humanc…
 ```
 
-Find the smallest archive, and pull the path to the mtx.zip archive
+Find the smallest archive
 
 
 ```r
-path <- dd %>%
-    filter(row_number() == which.min(size)) %>%
-    pull(path)
+dd %>%
+    filter(size == min(size))
+## # A tibble: 1 x 5
+##   projectTitle                entryId        hits      size path                
+##   <chr>                       <chr>          <list>   <dbl> <chr>               
+## 1 Single cell transcriptome … cddab57b-6868… <named… 6.24e7 https://data.humanc…
 ```
 
 Download, unzip, and import the archive into _R_; the download is
@@ -83,12 +86,15 @@ that there are 58347 features assayed across 2544 cells.
 
 
 ```r
-sce <- import.mtxzip(path, verbose = TRUE)
+sce <- 
+    filter(dd, size == min(size)) %>%
+    import.mtxzip(path, verbose = TRUE)
 ## download
 ## unzip
 ## rowData
 ## colData
 ## assays
+## dims: 58347 2544
 ## SingleCellExperiment
 sce
 ## class: SingleCellExperiment 
@@ -226,8 +232,8 @@ colDataConstants(sce) %>%
 ```
 
 The function `colDataBrief()` extracts the columns that differ between
-cells, and shortens column names to the shortest 'word' (defined by
-the occurence of `_` or `.`) suffix, as illustrated with
+cells, and shortens column names to the shortest 'word' (delimited by
+`[[:punct:]]+`) suffix, as illustrated with
 
 
 ```r
@@ -266,7 +272,7 @@ colDataBrief(sce)
 ## Working with colData
 
 Some exploration suggests that the column
-`donor_organism.provenance.d.naocument_id` defines each biological
+`donor_organism.provenance.document_id` defines each biological
 sample, so we see that the experiment consists of 8 individuals with
 between 178 and 505 cells per individual.
 
@@ -308,11 +314,12 @@ count
 ## 8 fc0c4a2b-af93-42ec-8b68-10f68a1f6… male   ""                               178
 ```
 
-The provenance `document_id` serves as a link to addition information
-about the samples. The additional information can be extracted by
-querying the HCA DSS. The information is returned as JSON, which is
-relatively difficult to deal with in _R_; the even-less-mature
-function `.files()` tries to parse this into a sensible format.
+The `document_iddonor_organism.provenance.document_id` serves as a
+link to addition information about the samples. The additional
+information can be extracted by querying the HCA DSS. The information
+is returned as JSON, which is relatively difficult to deal with in
+_R_; the even-less-mature function `.files()` tries to parse this into
+a sensible format.
 
 
 ```r
@@ -508,8 +515,8 @@ sessionInfo()
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] scater_1.15.4               ggplot2_3.2.1              
-##  [3] HCAmtxzip_0.0.4             dplyr_0.8.3                
+##  [1] scater_1.15.5               ggplot2_3.2.1              
+##  [3] HCAmtxzip_0.0.5             dplyr_0.8.3                
 ##  [5] SingleCellExperiment_1.9.0  SummarizedExperiment_1.17.0
 ##  [7] DelayedArray_0.13.0         BiocParallel_1.21.0        
 ##  [9] matrixStats_0.55.0          Biobase_2.47.0             
@@ -526,19 +533,19 @@ sessionInfo()
 ## [16] backports_1.1.5          lattice_0.20-38          glue_1.3.1              
 ## [19] digest_0.6.22            XVector_0.27.0           colorspace_1.4-1        
 ## [22] Matrix_1.2-17            pkgconfig_2.0.3          zlibbioc_1.33.0         
-## [25] purrr_0.3.3              scales_1.0.0             tibble_2.1.3            
-## [28] withr_2.1.2              lazyeval_0.2.2           cli_1.1.0               
-## [31] magrittr_1.5             crayon_1.3.4             memoise_1.1.0           
-## [34] evaluate_0.14            fansi_0.4.0              xml2_1.2.2              
-## [37] beeswarm_0.2.3           tools_4.0.0              stringr_1.4.0           
-## [40] munsell_0.5.0            irlba_2.3.3              compiler_4.0.0          
-## [43] rsvd_1.0.2               rlang_0.4.1              grid_4.0.0              
-## [46] RCurl_1.95-4.12          BiocNeighbors_1.5.1      rappdirs_0.3.1          
-## [49] bitops_1.0-6             labeling_0.3             gtable_0.3.0            
-## [52] codetools_0.2-16         DBI_1.0.0                curl_4.2                
-## [55] R6_2.4.1                 gridExtra_2.3            knitr_1.26              
-## [58] bit_1.1-14               utf8_1.1.4               zeallot_0.1.0           
-## [61] stringi_1.4.3            ggbeeswarm_0.6.0         Rcpp_1.0.3              
-## [64] vctrs_0.2.0              dbplyr_1.4.2             tidyselect_0.2.5        
-## [67] xfun_0.11
+## [25] purrr_0.3.3              scales_1.1.0             tibble_2.1.3            
+## [28] farver_2.0.1             withr_2.1.2              lazyeval_0.2.2          
+## [31] cli_1.1.0                magrittr_1.5             crayon_1.3.4            
+## [34] memoise_1.1.0            evaluate_0.14            fansi_0.4.0             
+## [37] xml2_1.2.2               beeswarm_0.2.3           tools_4.0.0             
+## [40] lifecycle_0.1.0          stringr_1.4.0            munsell_0.5.0           
+## [43] irlba_2.3.3              compiler_4.0.0           rsvd_1.0.2              
+## [46] rlang_0.4.1              grid_4.0.0               RCurl_1.95-4.12         
+## [49] BiocNeighbors_1.5.1      rappdirs_0.3.1           bitops_1.0-6            
+## [52] labeling_0.3             gtable_0.3.0             codetools_0.2-16        
+## [55] DBI_1.0.0                curl_4.2                 R6_2.4.1                
+## [58] gridExtra_2.3            knitr_1.26               bit_1.1-14              
+## [61] utf8_1.1.4               zeallot_0.1.0            stringi_1.4.3           
+## [64] ggbeeswarm_0.6.0         Rcpp_1.0.3               vctrs_0.2.0             
+## [67] dbplyr_1.4.2             tidyselect_0.2.5         xfun_0.11
 ```

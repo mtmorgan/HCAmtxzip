@@ -51,12 +51,11 @@ dd <- available()
 dd
 ```
 
-Find the smallest archive, and pull the path to the mtx.zip archive
+Find the smallest archive
 
 ```{r}
-path <- dd %>%
-    filter(row_number() == which.min(size)) %>%
-    pull(path)
+dd %>%
+    filter(size == min(size))
 ```
 
 Download, unzip, and import the archive into _R_; the download is
@@ -71,7 +70,9 @@ that there are 58347 features assayed across 2544 cells.
 [osca]: https://osca.bioconductor.org
 
 ```{r import}
-sce <- import.mtxzip(path, verbose = TRUE)
+sce <- 
+    filter(dd, size == min(size)) %>%
+    import.mtxzip(path, verbose = TRUE)
 sce
 ```
 
@@ -129,7 +130,7 @@ colDataBrief(sce)
 ## Working with colData
 
 Some exploration suggests that the column
-`donor_organism.provenance.d.naocument_id` defines each biological
+`donor_organism.provenance.document_id` defines each biological
 sample, so we see that the experiment consists of 8 individuals with
 between 178 and 505 cells per individual.
 
@@ -147,11 +148,12 @@ count <-
 count
 ```
 
-The provenance `document_id` serves as a link to addition information
-about the samples. The additional information can be extracted by
-querying the HCA DSS. The information is returned as JSON, which is
-relatively difficult to deal with in _R_; the even-less-mature
-function `.files()` tries to parse this into a sensible format.
+The `document_iddonor_organism.provenance.document_id` serves as a
+link to addition information about the samples. The additional
+information can be extracted by querying the HCA DSS. The information
+is returned as JSON, which is relatively difficult to deal with in
+_R_; the even-less-mature function `.files()` tries to parse this into
+a sensible format.
 
 ```{r donor_files}
 donor <-

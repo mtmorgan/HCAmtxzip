@@ -47,12 +47,35 @@
     sparseMatrix(v[[1]], v[[2]], x = v[[3]], dims = dims)
 }
 
+.import_mtxzip_path <-
+    function(.data, path)
+{
+    if (!missing(.data) && is.data.frame(.data)) {
+        path <- pull(.data, !!enquo(path))
+    } else if (!missing(.data) && missing(path)) {
+        path <- .data
+    } else if (missing(.data) && !missing(path)) {
+        path <- path
+    }
+
+    as.character(path)
+}
+
 #' Import Human Cell Atlas '.mtx.zip' archives to SingleCellExperiment
 #'
 #' @rdname import_mtx_zip
 #'
-#' @param path character(1) path to remote (`http://` or `https://`)
-#'     or local `.zip` archive.
+#' @param .data (optional) When present, a data.frame or derived
+#'     class, e.g., tibble, containing a single row, and a column
+#'     specified by the `path` argument and containing a path to a
+#'     remote (`http://` or `https://`) or local `.zip` archive.
+#'
+#'     `.data` can also be a `character(1)` argument used to provide
+#'     the path to the `.zip` archive directly.
+#'
+#' @param path character(1) the path to the remote (`http://` or
+#'     `https://`) or local `.zip` archive or, when `.data` is
+#'     present, the column name in which the path is found.
 #'
 #' @param ... additional arguments, not supported.
 #'
@@ -72,18 +95,22 @@
 #'
 #' @examples
 #' \dontrun{
-#' url <- paste0(
-#'     "https://s3.amazonaws.com/project-assets.data.humancellatlas.org/",
-#'     "project-assets/project-matrices/",
-#'     "116965f3-f094-4769-9d28-ae675c1b569c.homo_sapiens.mtx.zip"
-#' )
-#' sce <- import.mtxzip(url)
-#' sce
+#' aa <- available()
+#' sce <-
+#'     filter(aa, size == min(size)) %>%
+#'     import.mtxzip()
 #' }
 #' @export
 import.mtxzip <-
-    function(path, ..., exdir = tempfile(), overwrite = FALSE, verbose = FALSE)
+    function(.data, path, ...,
+             exdir = tempfile(), overwrite = FALSE, verbose = FALSE)
 {
+    if (!missing(.data) && !missing(path)) {
+        path <- .import_mtxzip_path(.data, !!enquo(path))
+    } else {
+        path <- .import_mtxzip_path(.data, path)
+    }
+
     stopifnot(
         .is_scalar_character(path), .is_scalar_character(exdir),
         startsWith(path, "http") || file.exists(path),
