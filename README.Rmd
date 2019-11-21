@@ -111,8 +111,8 @@ colDataConstants(sce) %>%
 ```
 
 The function `colDataBrief()` extracts the columns that differ between
-cells, and shortens column names to the shortest 'word' (defined by
-the occurence of `_` or `.`) suffix, as illustrated with
+cells, and shortens column names to the shortest 'word' (delimited by
+`[[:punct:]]+`) suffix, as illustrated with
 
 ```{r}
 x <- setNames(nm = c("common_prefix.a_title", "common_prefix.a_name"))

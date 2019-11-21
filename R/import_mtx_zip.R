@@ -39,6 +39,7 @@
 {
     headers <- readLines(path, 2L)
     dims <- as.integer(strsplit(headers[2], " ")[[1]][1:2])
+    !verbose || .message("dim: ", dims[1], " ", dims[2])
     v <- scan(
         path, list(integer(), integer(), numeric()), skip = 2,
         quiet = !verbose
@@ -139,6 +140,5 @@ import.mtxzip <-
 
 
 test <- c(
-    "~/Downloads/Reprogrammed_Dendritic_Cells homo_sapiens 2019-11-08 16.12.mtx.zip",
     "https://s3.amazonaws.com/project-assets.data.humancellatlas.org/project-assets/project-matrices/116965f3-f094-4769-9d28-ae675c1b569c.homo_sapiens.mtx.zip"
 )

@@ -130,6 +130,6 @@ available <-
     projects <- .projects()
     buckets <- .buckets()
     suppressMessages(left_join(projects, buckets)) %>%
-        filter(fileFormat %in% "mtx.zip") %>%
-        select(-fileFormat)
+        filter(.data$fileFormat %in% "mtx.zip") %>%
+        select(-"fileFormat")
 }
