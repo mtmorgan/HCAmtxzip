@@ -1,4 +1,4 @@
-.coldata_n_elts <-
+.data_n_elts <-
     function(x)
 {
     vapply(x, function(column) length(unique(column)), integer(1))
@@ -96,11 +96,10 @@ constant <-
 {
     stopifnot(is.data.frame(.data))
 
-    colData <- colData(sce)
-    n <- .coldata_n_elts(colData)
-    colData <- colData[n == 1L]
-    value <- sapply(colData, unique)
-    column <- names(colData)
+    n <- .data_n_elts(.data)
+    .data <- .data[n == 1L]
+    value <- sapply(.data, unique)
+    column <- names(.data)
     tibble(column, value)
 }
 
@@ -120,9 +119,8 @@ brief <-
 {
     stopifnot(is.data.frame(.data))
 
-    colData <- colData(sce)
-    n <- .coldata_n_elts(colData)
-    tbl <- as_tibble(colData[, n != 1L, drop = FALSE])
+    n <- .data_n_elts(.data)
+    tbl <- as_tibble(.data[, n != 1L, drop = FALSE])
     names(tbl) <- .names_abbreviate(tbl)
 
     tbl
