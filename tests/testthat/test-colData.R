@@ -1,4 +1,4 @@
-context("colData_helpers")
+context("tbl_utilities")
 
 test_that(".names_abbreviate works", {
     x <- setNames(nm = character())
@@ -36,4 +36,24 @@ test_that(".names_abbreviate works", {
     ## trailing punctuation
     x <- setNames(nm = c("b_c", "b_c_"))
     expect_equal(.names_abbreviate(x), c("c", "c_"))
+})
+
+test_that("constant() works", {
+    df <- data.frame(x=1:2, y = 3)
+    expected <- tibble(column = "y", value = 3)
+    expect_identical(constant(df), expected)
+
+    df <- data.frame(x=1:2, y = 3, z = "four", stringsAsFactors = FALSE)
+    expected <- tibble(
+        column = c("y", "z"),
+        value = c(3, "four")
+    )
+    expect_identical(constant(df), expected)
+
+    df <- data.frame(x=1:2)
+    expected <- tibble(
+        column = character(0),
+        value = setNames(list(), character())
+    )
+    expect_identical(constant(df), expected)
 })
