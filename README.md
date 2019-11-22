@@ -88,7 +88,7 @@ that there are 58347 features assayed across 2544 cells.
 ```r
 sce <- 
     filter(dd, size == min(size)) %>%
-    import_mtxzip(path, verbose = TRUE)
+    import_mtxzip(verbose = TRUE)
 ## download
 ## unzip
 ## rowData
