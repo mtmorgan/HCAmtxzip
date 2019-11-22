@@ -41,18 +41,18 @@
 
 #' Helper functions for simplifying colData
 #'
-#' @rdname colData
+#' @rdname tbl_utilities
 #'
-#' @description `colDataTibble()` creates a tibble from `colData()`
+#' @description `colTibble()` creates a tibble from `colData()`
 #'
 #' @param sce a `SummarizedExperiment` or derived object, e.g., a
 #'     `SingleCellExperiment`.
 #'
-#' @return `colDataTibble()` returns a tibble representation of
+#' @return `colTibble()` returns a tibble representation of
 #'     `colData()`.
 #'
 #' @export
-colDataTibble <-
+colTibble <-
     function(sce)
 {
     stopifnot(is(sce, "SummarizedExperiment"))
@@ -60,13 +60,13 @@ colDataTibble <-
     as_tibble(colData(sce))
 }
 
-#' @rdname colData
+#' @rdname tbl_utilities
 #'
-#' @return `rowDataTibble() returns a tibble representation of
+#' @return `rowTibble() returns a tibble representation of
 #'     `rowData()`.
 #'
 #' @export
-rowDataTibble <-
+rowTibble <-
     function(sce)
 {
     stopifnot(is(sce, "SummarizedExperiment"))
@@ -74,25 +74,27 @@ rowDataTibble <-
     as_tibble(rowData(sce))
 }
 
-#' @rdname colData
+#' @rdname tbl_utilities
 #'
-#' @description `colDataConstants()` scans `colData()` columns to
+#' @description `constant()` scans `colData()` columns to
 #'     identify those with a single distinct value.
 #'
-#' @return `colDataConstants()` returns a two-column tibble. The first
-#'     column, `key` corresponds to `colData()` column names for which
-#'     only a single distinct value is present. The second column
-#'     `value` is the unique value.
+#' @param .data A `data.frame()` or `tibble()`.
+#'
+#' @return `constant()` returns a two-column tibble. The first column,
+#'     `key` corresponds to `colData()` column names for which only a
+#'     single distinct value is present. The second column `value` is
+#'     the unique value.
 #'
 #' @importFrom methods is
 #' @importFrom stats setNames
 #' @importFrom SingleCellExperiment rowData colData
 #'
 #' @export
-colDataConstants <-
-    function(sce)
+constant <-
+    function(.data)
 {
-    stopifnot(is(sce, "SummarizedExperiment"))
+    stopifnot(is.data.frame(.data))
 
     colData <- colData(sce)
     n <- .coldata_n_elts(colData)
@@ -102,21 +104,21 @@ colDataConstants <-
     tibble(column, value)
 }
 
-#' @rdname colData
+#' @rdname tbl_utilities
 #'
-#' @description `colDataBrief()` produces a subset of `colData()`
+#' @description `brief()` produces a subset of `colData()`
 #'     columns which contain more than one distinct value.
 #'
-#' @return `colDataBrief()` returns a tibble containing only those
+#' @return `brief()` returns a tibble containing only those
 #'     `colData()` columns with more than one value, and with column
 #'     names abbreviated to the shortests common 'word' (using
 #'     `[[:punct:]]+` as separators) suffixes.
 #'
 #' @export
-colDataBrief <-
-    function(sce)
+brief <-
+    function(.data)
 {
-    stopifnot(is(sce, "SummarizedExperiment"))
+    stopifnot(is.data.frame(.data))
 
     colData <- colData(sce)
     n <- .coldata_n_elts(colData)

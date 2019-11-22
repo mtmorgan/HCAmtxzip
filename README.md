@@ -136,12 +136,12 @@ mean(assay(sce) == 0)
 
 Information about each feature can be extracted with `rowData(sce)`,
 and about each cell with `colData(sce)`; it is often convenient to work
-with this data using the 'tidy' framework, with `rowDataTibble()` and
-`colDataTibble()` providing relevant access
+with this data using the 'tidy' framework, with `rowTibble()` and
+`colTibble()` providing relevant access
 
 
 ```r
-colDataTibble(sce)
+colTibble(sce)
 ## # A tibble: 2,544 x 43
 ##    genes_detected file_uuid file_version total_umis emptydrops_is_c… barcode
 ##             <int> <chr>     <chr>        <lgl>      <lgl>            <lgl>  
@@ -192,13 +192,14 @@ colDataTibble(sce)
 
 Much of the `colData()` is constant across all cells, e.g., all cells
 come from the same experiment, so share the same
-`project.project_core.project_title`. Use `colDataConstants()` to
-access these common features, where we learn for instance that the
-experiment involves the pancreas islet of Langerhans.
+`project.project_core.project_title`. Use `constant()` to access
+these common features, where we learn for instance that the experiment
+involves the pancreas islet of Langerhans.
 
 
 ```r
-colDataConstants(sce) %>%
+colTibble(sce) %>% 
+    constant() %>%
     print(n = Inf)
 ## # A tibble: 27 x 2
 ##    column                                value                                  
@@ -232,8 +233,8 @@ colDataConstants(sce) %>%
 ## 27 analysis_working_group_approval_stat… blessed
 ```
 
-The function `colDataBrief()` extracts the columns that differ between
-cells, and shortens column names to the shortest 'word' (delimited by
+The `brief()` function extracts the columns that differ between cells,
+and shortens column names to the shortest 'word' (delimited by
 `[[:punct:]]+`) suffix, as illustrated with
 
 
@@ -248,7 +249,8 @@ interactive session.
 
 
 ```r
-colDataBrief(sce)
+colTibble(sce) %>%
+    brief()
 ## # A tibble: 2,544 x 16
 ##    detected file_uuid file_version suspension.prov… from_organism.p…
 ##       <int> <chr>     <chr>        <chr>            <chr>           
@@ -279,7 +281,8 @@ between 178 and 505 cells per individual.
 
 
 ```r
-colDataBrief(sce) %>%
+colTibble(sce) %>%
+    brief() %>%
     count(donor_organism.provenance.document_id)
 ## # A tibble: 8 x 2
 ##   donor_organism.provenance.document_id     n
@@ -299,7 +302,8 @@ There are 6 male and 2 female samples with diverse ethnicity.
 
 ```r
 count <-
-    colDataBrief(sce) %>%
+    colTibble(sce) %>%
+    brief() %>%
     count(donor_organism.provenance.document_id, sex, ethnicity.ontology_label)
 count
 ## # A tibble: 8 x 4
@@ -325,7 +329,7 @@ sensible format.
 
 ```r
 donor <-
-    colDataTibble(sce) %>%
+    colTibble(sce) %>%
     distinct(donor_organism.provenance.document_id) %>%
     HCAmtxzip:::.files(donor_organism.provenance.document_id)
 ```
@@ -377,7 +381,7 @@ left_join(count, donor)
 ## #   development_stage.text <chr>, development_stage.ontology_label <chr>,
 ## #   development_stage.ontology <chr>, provenance.document_id <chr>,
 ## #   provenance.submission_date <chr>, provenance.update_date <chr>
-all <- left_join(colDataTibble(sce), donor)
+all <- left_join(colTibble(sce), donor)
 ## Joining, by = "donor_organism.provenance.document_id"
 ```
 
@@ -389,7 +393,7 @@ the HCA) description of the project.
 
 
 ```r
-project <- colDataTibble(sce) %>%
+project <- colTibble(sce) %>%
     distinct(project.provenance.document_id) %>%
     HCAmtxzip:::.files(project.provenance.document_id)
 project

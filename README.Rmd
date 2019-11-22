@@ -94,26 +94,27 @@ mean(assay(sce) == 0)
 
 Information about each feature can be extracted with `rowData(sce)`,
 and about each cell with `colData(sce)`; it is often convenient to work
-with this data using the 'tidy' framework, with `rowDataTibble()` and
-`colDataTibble()` providing relevant access
+with this data using the 'tidy' framework, with `rowTibble()` and
+`colTibble()` providing relevant access
 
 ```{r}
-colDataTibble(sce)
+colTibble(sce)
 ```
 
 Much of the `colData()` is constant across all cells, e.g., all cells
 come from the same experiment, so share the same
-`project.project_core.project_title`. Use `colDataConstants()` to
-access these common features, where we learn for instance that the
-experiment involves the pancreas islet of Langerhans.
+`project.project_core.project_title`. Use `constant()` to access
+these common features, where we learn for instance that the experiment
+involves the pancreas islet of Langerhans.
 
 ```{r}
-colDataConstants(sce) %>%
+colTibble(sce) %>% 
+    constant() %>%
     print(n = Inf)
 ```
 
-The function `colDataBrief()` extracts the columns that differ between
-cells, and shortens column names to the shortest 'word' (delimited by
+The `brief()` function extracts the columns that differ between cells,
+and shortens column names to the shortest 'word' (delimited by
 `[[:punct:]]+`) suffix, as illustrated with
 
 ```{r}
@@ -125,7 +126,8 @@ This can make the column names a little easier to use in an
 interactive session.
 
 ```{r}
-colDataBrief(sce)
+colTibble(sce) %>%
+    brief()
 ```
 
 ## Working with colData
@@ -136,7 +138,8 @@ sample, so we see that the experiment consists of 8 individuals with
 between 178 and 505 cells per individual.
 
 ```{r}
-colDataBrief(sce) %>%
+colTibble(sce) %>%
+    brief() %>%
     count(donor_organism.provenance.document_id)
 ```
 
@@ -144,7 +147,8 @@ There are 6 male and 2 female samples with diverse ethnicity.
 
 ```{r}
 count <-
-    colDataBrief(sce) %>%
+    colTibble(sce) %>%
+    brief() %>%
     count(donor_organism.provenance.document_id, sex, ethnicity.ontology_label)
 count
 ```
@@ -158,7 +162,7 @@ sensible format.
 
 ```{r donor_files}
 donor <-
-    colDataTibble(sce) %>%
+    colTibble(sce) %>%
     distinct(donor_organism.provenance.document_id) %>%
     HCAmtxzip:::.files(donor_organism.provenance.document_id)
 ```
@@ -175,7 +179,7 @@ with the entire data set using `left_join()`
 
 ```{r}
 left_join(count, donor)
-all <- left_join(colDataTibble(sce), donor)
+all <- left_join(colTibble(sce), donor)
 ```
 
 Similarly detailed information about other aspects of the experiment,
@@ -185,7 +189,7 @@ elsewhere in `colData(sce)`. For instance, here is the (truncated, in
 the HCA) description of the project.
 
 ```{r project_files}
-project <- colDataTibble(sce) %>%
+project <- colTibble(sce) %>%
     distinct(project.provenance.document_id) %>%
     HCAmtxzip:::.files(project.provenance.document_id)
 project
