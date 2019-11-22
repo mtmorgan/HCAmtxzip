@@ -41,7 +41,7 @@ pre-computed mtx.zip archives are available
 
 ```r
 suppressPackageStartupMessages({ library(HCAmtxzip) })
-dd <- available()
+dd <- available("mtx.zip")
 dd
 ## # A tibble: 13 x 5
 ##    projectTitle               entryId        hits      size path                
@@ -88,14 +88,15 @@ that there are 58347 features assayed across 2544 cells.
 ```r
 sce <- 
     filter(dd, size == min(size)) %>%
-    import.mtxzip(path, verbose = TRUE)
+    import_mtxzip(path, verbose = TRUE)
 ## download
 ## unzip
 ## rowData
 ## colData
 ## assays
-## dims: 58347 2544
+## dim: 58347 2544
 ## SingleCellExperiment
+
 sce
 ## class: SingleCellExperiment 
 ## dim: 58347 2544 
@@ -314,12 +315,12 @@ count
 ## 8 fc0c4a2b-af93-42ec-8b68-10f68a1f6… male   ""                               178
 ```
 
-The `document_iddonor_organism.provenance.document_id` serves as a
-link to addition information about the samples. The additional
-information can be extracted by querying the HCA DSS. The information
-is returned as JSON, which is relatively difficult to deal with in
-_R_; the even-less-mature function `.files()` tries to parse this into
-a sensible format.
+The `donor_organism.provenance.document_id` serves as a link to
+addition information about the samples. The additional information can
+be extracted by querying the HCA DSS. The information is returned as
+JSON, which is relatively difficult to deal with in _R_; the
+even-less-mature function `.files()` tries to parse this into a
+sensible format.
 
 
 ```r
@@ -400,7 +401,8 @@ project
 ## #   supplementary_links <chr>, insdc_project_accessions <chr>,
 ## #   geo_series_accessions <chr>, provenance.document_id <chr>,
 ## #   provenance.submission_date <chr>, provenance.update_date <chr>
-pull(project, "project_core.project_description") %>%
+
+pull(project, project_core.project_description) %>%
     strwrap(width = 80) %>%
     cat(sep="\n")
 ## As organisms age, cells accumulate genetic and epigenetic changes that
@@ -446,14 +448,12 @@ library(ggplot2)
 Normalize our data; the updated `sce` contains an addition assay `logcounts`.
 
 
-
 ```r
 sce <- logNormCounts(sce) 
 ```
 
 For an overall gestalt, focus on the 1000 most variable
 (statistically informative?) genes
-
 
 
 ```r
@@ -493,7 +493,6 @@ U41HG004059, U24CA180996, and U24CA232979. The content is solely the
 responsibility of the authors and does not necessarily represent the
 official views of the National Institutes of Health.
 
-
 The following is a summary of software used to produce this document.
 
 
@@ -516,7 +515,7 @@ sessionInfo()
 ## 
 ## other attached packages:
 ##  [1] scater_1.15.5               ggplot2_3.2.1              
-##  [3] HCAmtxzip_0.0.5             dplyr_0.8.3                
+##  [3] HCAmtxzip_0.0.6             dplyr_0.8.3                
 ##  [5] SingleCellExperiment_1.9.0  SummarizedExperiment_1.17.0
 ##  [7] DelayedArray_0.13.0         BiocParallel_1.21.0        
 ##  [9] matrixStats_0.55.0          Biobase_2.47.0             

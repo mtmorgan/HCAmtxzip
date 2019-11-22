@@ -33,4 +33,5 @@ Imports:
     rlang
 RoxygenNote: 7.0.0
 Suggests:
+    LoomExperiment,
     testthat (>= 2.1.0)

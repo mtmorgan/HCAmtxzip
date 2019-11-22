@@ -16,13 +16,6 @@
     if (length(msg)) msg else TRUE
 }
 
-#' @importFrom BiocFileCache BiocFileCache bfcrpath
-.download_zip <-
-    function(path)
-{
-    bfcrpath(BiocFileCache(), path)
-}
-
 .read_tsv <-
     function(path, ..., stringsAsFactors = FALSE, sep = "\t", header = FALSE)
 {
@@ -47,23 +40,9 @@
     sparseMatrix(v[[1]], v[[2]], x = v[[3]], dims = dims)
 }
 
-.import_mtxzip_path <-
-    function(.data, path)
-{
-    if (!missing(.data) && is.data.frame(.data)) {
-        path <- pull(.data, !!enquo(path))
-    } else if (!missing(.data) && missing(path)) {
-        path <- .data
-    } else if (missing(.data) && !missing(path)) {
-        path <- path
-    }
-
-    as.character(path)
-}
-
-#' Import Human Cell Atlas '.mtx.zip' archives to SingleCellExperiment
+#' Import Human Cell Atlas '.mtx.zip' or '.loom' archives
 #'
-#' @rdname import_mtx_zip
+#' @rdname import
 #'
 #' @param .data (optional) When present, a data.frame or derived
 #'     class, e.g., tibble, containing a single row, and a column
@@ -75,7 +54,8 @@
 #'
 #' @param path character(1) the path to the remote (`http://` or
 #'     `https://`) or local `.zip` archive or, when `.data` is
-#'     present, the column name in which the path is found.
+#'     present, the column name (default `"path"`) in which the path
+#'     is found.
 #'
 #' @param ... additional arguments, not supported.
 #'
@@ -95,33 +75,28 @@
 #'
 #' @examples
 #' \dontrun{
-#' aa <- available()
-#' sce <-
-#'     filter(aa, size == min(size)) %>%
-#'     import.mtxzip()
+#' mtx <-
+#'     available("mtx.zip") %>%
+#'     filter(size == min(size)) %>%
+#'     import_mtxzip()
 #' }
 #' @export
-import.mtxzip <-
+import_mtxzip <-
     function(.data, path, ...,
              exdir = tempfile(), overwrite = FALSE, verbose = FALSE)
 {
-    if (!missing(.data) && !missing(path)) {
-        path <- .import_mtxzip_path(.data, !!enquo(path))
-    } else {
-        path <- .import_mtxzip_path(.data, path)
-    }
-
     stopifnot(
-        .is_scalar_character(path), .is_scalar_character(exdir),
-        startsWith(path, "http") || file.exists(path),
-        !file.exists(exdir) || dir.exists(exdir),
-        length(list(...)) == 0L
+        length(list(...)) == 0L,
+        .is_scalar_character(exdir),
+        .is_scalar_logical(overwrite),
+        overwrite || !file.exists(exdir),
+        .is_scalar_logical(verbose)
     )
 
-    ## download?
-    if (startsWith(path, "http")) {
-        !verbose || .message("download")
-        path <- .download_zip(path)
+    if (missing(.data) || missing(path)) {
+        path <- .import_data_path(.data, path, verbose = verbose)
+    } else {
+        path <- .import_data_path(.data, !!enquo(path), verbose = verbose)
     }
 
     ## unzip
@@ -164,8 +139,3 @@ import.mtxzip <-
         rowData = features
     )
 }
-
-
-test <- c(
-    "https://s3.amazonaws.com/project-assets.data.humancellatlas.org/project-assets/project-matrices/116965f3-f094-4769-9d28-ae675c1b569c.homo_sapiens.mtx.zip"
-)

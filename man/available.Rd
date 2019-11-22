@@ -4,7 +4,11 @@
 \alias{available}
 \title{Discover projects with pre-computed HCA files}
 \usage{
-available()
+available(type = c("loom", "mtx.zip"))
+}
+\arguments{
+\item{type}{`character(1)` type of archive to import. One of
+`"loom"` (default) or `"mtx.zip"`.}
 }
 \value{
 A `tibble` describing available projects and the full path
@@ -13,16 +17,23 @@ A `tibble` describing available projects and the full path
 \description{
 Discover projects with pre-computed HCA files
 }
+\details{
+This function visits
+    \url{https://data.humancellatlas.org/explore/projects} and
+    identifies projects for which the 'Matrix' file icon indicates
+    that a matrix is available for download. The return value is a
+    `tibble` that can be subset to a single project, and then the
+    data retrieved to R using `import_loom()` or `import_mtxzip()`.
+}
 \examples{
-dd <- available()
+dd <- available("mtx.zip")
 dd
 dd \%>\% select(projectTitle)
 dd \%>\%
-    filter(grepl("^A single-cell reference", projectTitle)) \%>\%
-    t()
+    filter(grepl("^A single-cell reference", projectTitle))
 path <- dd \%>\%
     filter(row_number() == which.min(size)) \%>\%
     pull(path)
-sce <- import.mtxzip(path)
+sce <- import_mtxzip(path)
 
 }

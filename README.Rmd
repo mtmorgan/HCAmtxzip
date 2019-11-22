@@ -47,7 +47,7 @@ pre-computed mtx.zip archives are available
 
 ```{r available}
 suppressPackageStartupMessages({ library(HCAmtxzip) })
-dd <- available()
+dd <- available("mtx.zip")
 dd
 ```
 
@@ -72,7 +72,8 @@ that there are 58347 features assayed across 2544 cells.
 ```{r import}
 sce <- 
     filter(dd, size == min(size)) %>%
-    import.mtxzip(path, verbose = TRUE)
+    import_mtxzip(path, verbose = TRUE)
+
 sce
 ```
 
@@ -148,12 +149,12 @@ count <-
 count
 ```
 
-The `document_iddonor_organism.provenance.document_id` serves as a
-link to addition information about the samples. The additional
-information can be extracted by querying the HCA DSS. The information
-is returned as JSON, which is relatively difficult to deal with in
-_R_; the even-less-mature function `.files()` tries to parse this into
-a sensible format.
+The `donor_organism.provenance.document_id` serves as a link to
+addition information about the samples. The additional information can
+be extracted by querying the HCA DSS. The information is returned as
+JSON, which is relatively difficult to deal with in _R_; the
+even-less-mature function `.files()` tries to parse this into a
+sensible format.
 
 ```{r donor_files}
 donor <-
@@ -188,7 +189,8 @@ project <- colDataTibble(sce) %>%
     distinct(project.provenance.document_id) %>%
     HCAmtxzip:::.files(project.provenance.document_id)
 project
-pull(project, "project_core.project_description") %>%
+
+pull(project, project_core.project_description) %>%
     strwrap(width = 80) %>%
     cat(sep="\n")
 ```
@@ -209,14 +211,12 @@ library(ggplot2)
 
 Normalize our data; the updated `sce` contains an addition assay `logcounts`.
 
-
 ```{r}
 sce <- logNormCounts(sce) 
 ```
 
 For an overall gestalt, focus on the 1000 most variable
 (statistically informative?) genes
-
 
 ```{r rowvar}
 rv = apply(logcounts(sce), 1, var)
@@ -250,7 +250,6 @@ NCI of the National Institutes of Health under award numbers
 U41HG004059, U24CA180996, and U24CA232979. The content is solely the
 responsibility of the authors and does not necessarily represent the
 official views of the National Institutes of Health.
-
 
 The following is a summary of software used to produce this document.
 

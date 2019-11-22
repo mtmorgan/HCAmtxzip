@@ -103,20 +103,29 @@
 
 #' Discover projects with pre-computed HCA files
 #'
+#' @param type `character(1)` type of archive to import. One of
+#'     `"loom"` (default) or `"mtx.zip"`.
+#'
+#' @details This function visits
+#'     \url{https://data.humancellatlas.org/explore/projects} and
+#'     identifies projects for which the 'Matrix' file icon indicates
+#'     that a matrix is available for download. The return value is a
+#'     `tibble` that can be subset to a single project, and then the
+#'     data retrieved to R using `import_loom()` or `import_mtxzip()`.
+#'
 #' @return A `tibble` describing available projects and the full path
 #'     to the archive.
 #'
 #' @examples
-#' dd <- available()
+#' dd <- available("mtx.zip")
 #' dd
 #' dd %>% select(projectTitle)
 #' dd %>%
-#'     filter(grepl("^A single-cell reference", projectTitle)) %>%
-#'     t()
+#'     filter(grepl("^A single-cell reference", projectTitle))
 #' path <- dd %>%
 #'     filter(row_number() == which.min(size)) %>%
 #'     pull(path)
-#' sce <- import.mtxzip(path)
+#' sce <- import_mtxzip(path)
 #'
 #' @importFrom httr GET stop_for_status content
 #' @importFrom xml2 xml_find_all
@@ -125,11 +134,14 @@
 #'
 #' @export
 available <-
-    function()
+    function(type = c("loom", "mtx.zip"))
 {
+    type <- match.arg(type)
+    fileFormat <- NULL                  # pacify R CMD check
+
     projects <- .projects()
     buckets <- .buckets()
     suppressMessages(left_join(projects, buckets)) %>%
-        filter(.data$fileFormat %in% "mtx.zip") %>%
-        select(-"fileFormat")
+        filter(fileFormat %in% type) %>%
+        select(-fileFormat)
 }
