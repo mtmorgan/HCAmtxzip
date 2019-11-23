@@ -240,7 +240,7 @@ and shortens column names to the shortest 'word' (delimited by
 
 ```r
 x <- setNames(nm = c("common_prefix.a_title", "common_prefix.a_name"))
-HCAmtxzip:::.names_abbreviate(x)
+HCAmtxzip:::.abbreviate_names(x)
 ## [1] "title" "name"
 ```
 

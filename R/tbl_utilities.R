@@ -5,7 +5,7 @@
 }
 
 #' @importFrom utils head tail
-.names_abbreviate <-
+.abbreviate_names <-
     function(x, map = FALSE)
 {
     stopifnot(
@@ -112,20 +112,26 @@ constant <-
 #' @description `brief()` produces a subset of `colData()`
 #'     columns which contain more than one distinct value.
 #'
+#' @param abbreviate_names logical(1) when `TRUE`, abbreviate column
+#'     names to the shortests common 'word' (using `[[:punct:]]+` as
+#'     separators) suffixes. E.g., column names `"a.b.c"` and `d.e.c`
+#'     would abbreviate to `b.c` and `e.c`.
+#'
 #' @return `brief()` returns a tibble containing only those
-#'     `colData()` columns with more than one value, and with column
-#'     names abbreviated to the shortests common 'word' (using
-#'     `[[:punct:]]+` as separators) suffixes.
+#'     `colData()` columns with more than one value, and with (by
+#'     default) column names abbreviated to the shortests common
+#'     'word' (using `[[:punct:]]+` as separators) suffixes.
 #'
 #' @export
 brief <-
-    function(.data)
+    function(.data, abbreviate_names = TRUE)
 {
     stopifnot(is.data.frame(.data))
 
     n <- .data_n_elts(.data)
     tbl <- as_tibble(.data[, n != 1L, drop = FALSE])
-    names(tbl) <- .names_abbreviate(tbl)
+    if (abbreviate_names)
+        names(tbl) <- .abbreviate_names(tbl)
 
     tbl
 }

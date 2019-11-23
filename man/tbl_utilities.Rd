@@ -13,7 +13,7 @@ rowTibble(sce, ...)
 
 constant(.data)
 
-brief(.data)
+brief(.data, abbreviate_names = TRUE)
 }
 \arguments{
 \item{sce}{a `SummarizedExperiment` or derived object, e.g., a
@@ -23,6 +23,11 @@ brief(.data)
 map rownames to a column.}
 
 \item{.data}{A `data.frame()` or `tibble()`.}
+
+\item{abbreviate_names}{logical(1) when `TRUE`, abbreviate column
+names to the shortests common 'word' (using `[[:punct:]]+` as
+separators) suffixes. E.g., column names `"a.b.c"` and `d.e.c`
+would abbreviate to `b.c` and `e.c`.}
 }
 \value{
 `colTibble()` returns a tibble representation of
@@ -37,9 +42,9 @@ map rownames to a column.}
     the unique value.
 
 `brief()` returns a tibble containing only those
-    `colData()` columns with more than one value, and with column
-    names abbreviated to the shortests common 'word' (using
-    `[[:punct:]]+` as separators) suffixes.
+    `colData()` columns with more than one value, and with (by
+    default) column names abbreviated to the shortests common
+    'word' (using `[[:punct:]]+` as separators) suffixes.
 }
 \description{
 `colTibble()` creates a tibble from `colData()`
