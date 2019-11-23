@@ -25,7 +25,8 @@
             break
         abbrev <- lapply(elts, tail, 1)
         tbl <- table(unlist(abbrev))
-        unique <- unlist(abbrev) %in% names(tbl)[tbl == 1L]
+        unique <- unlist(abbrev) %in% names(tbl)[tbl == 1L] |
+            lengths(seps) == 0L
         elts[unique] <- abbrev[unique]
         elts[!unique] <- Map(function(elt, sep) {
             c(head(elt, -2), paste0(tail(elt, 2), collapse=sep))

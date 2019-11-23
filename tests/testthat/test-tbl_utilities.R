@@ -36,6 +36,10 @@ test_that(".names_abbreviate works", {
     ## trailing punctuation
     x <- setNames(nm = c("b_c", "b_c_"))
     expect_equal(.names_abbreviate(x), c("c", "c_"))
+
+    ## suffix of one matches all of another
+    x <- setNames(nm = c("a.b.c", "b.c"))
+    expect_equal(.names_abbreviate(x), unname(x))
 })
 
 test_that("constant() works", {
