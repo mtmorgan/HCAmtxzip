@@ -7,9 +7,9 @@
 \alias{brief}
 \title{Helper functions for simplifying colData}
 \usage{
-colTibble(sce)
+colTibble(sce, ...)
 
-rowTibble(sce)
+rowTibble(sce, ...)
 
 constant(.data)
 
@@ -18,6 +18,9 @@ brief(.data)
 \arguments{
 \item{sce}{a `SummarizedExperiment` or derived object, e.g., a
 `SingleCellExperiment`.}
+
+\item{...}{additional arguments passed to `as_tibble()`, e.g., to
+map rownames to a column.}
 
 \item{.data}{A `data.frame()` or `tibble()`.}
 }

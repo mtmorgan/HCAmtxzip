@@ -49,16 +49,19 @@
 #' @param sce a `SummarizedExperiment` or derived object, e.g., a
 #'     `SingleCellExperiment`.
 #'
+#' @param ... additional arguments passed to `as_tibble()`, e.g., to
+#'     map rownames to a column.
+#'
 #' @return `colTibble()` returns a tibble representation of
 #'     `colData()`.
 #'
 #' @export
 colTibble <-
-    function(sce)
+    function(sce, ...)
 {
     stopifnot(is(sce, "SummarizedExperiment"))
 
-    as_tibble(colData(sce))
+    as_tibble(colData(sce), ...)
 }
 
 #' @rdname tbl_utilities
@@ -68,11 +71,11 @@ colTibble <-
 #'
 #' @export
 rowTibble <-
-    function(sce)
+    function(sce, ...)
 {
     stopifnot(is(sce, "SummarizedExperiment"))
 
-    as_tibble(rowData(sce))
+    as_tibble(rowData(sce), ...)
 }
 
 #' @rdname tbl_utilities
